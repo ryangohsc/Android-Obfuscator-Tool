@@ -9,10 +9,6 @@ $(document).ready(function(){
     });
 })
 
-function cleanup(){
-
-}
-
 function upload(){
     let formData = new FormData();
     formData.append("file", fileInput.files[0]);
