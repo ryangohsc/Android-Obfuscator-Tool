@@ -26,17 +26,21 @@
                     <label for="fileInput" class="form-label"><h4>Input File</h4></label>
                     <input id="fileInput" class="form-control" type="file" name="file" accept=".apk, .smali"/>
                     <div id="fileInputComment" class="form-text">Files can be either <code>.APK</code> or <code>.SMALI</code></div>
-                    <button type="button" onclick="upload()" class="btn btn-primary w-100 mt-3">Obfuscate</button>
+                    <button id="obfuscateButton" type="button" onclick="upload()" class="btn btn-primary w-100 mt-3">Obfuscate</button>
                 </form>
             </div>
             <div id="uploadStatus"></div>
-            <div id="fileContent" class="row bg-light border rounded-3 mt-3 mb-3">
-                <h4 id="initialCodeHeader" class="pt-3 pb-1" hidden>Input File Content</h4>
+            <div id="apkExtractSpinnerWrapper" class="alert alert-light d-flex align-items-center">
+                <span id="apkExtractSpinnerHeader" hidden>File is being extracted ...</span>
+                <span id="apkExtractSpinner" class="spinner-grow text-primary ms-auto" role="status" hidden></span>
+            </div>
+            <div id="apkExtractWrapper" class="row bg-light border rounded-3 mt-3 mb-3" hidden>
+                <h4 id="apkExtractHeader" class="pt-3 pb-1" hidden>APK Extraction Log</h4>
                 <div class="bg-white border rounded-3 mb-3 font-monospace fs-6 mb-3" style="max-height: 25vh; overflow-y: scroll;">
-                    <pre><code id="initialCode"></code></pre>
+                    <pre><code id="apkExtractStatus"></code></pre>
                 </div>
             </div>
-            <div id="fileCompare" class="row bg-light border rounded-3 mt-3 mb-3">
+            <div id="fileCompareWrapper" class="row bg-light border rounded-3 mt-3 mb-3" hidden>
                 <h4 id="fileCompareHeader" class="pt-3 pb-1" hidden>Modification Comparision</h4>
                 <div id="fileCompareZone" class="border rounded-3 p-0  mb-3" style="max-height: 40vh; overflow-y: scroll;"></div>
             </div>

@@ -1,4 +1,8 @@
-$(document).ready(function(){
+$(document).ready(
+    cleanup()
+)
+
+function cleanup(){
     $.ajax({
         url: '/cleanup',
         type: 'POST',
@@ -7,9 +11,10 @@ $(document).ready(function(){
         error: function() {
         }
     });
-})
+}
 
 function upload(){
+    cleanup()
     let formData = new FormData();
     formData.append("file", fileInput.files[0]);
     $.ajax({
@@ -20,7 +25,11 @@ function upload(){
         contentType: false,
         success: function() {
             $("#uploadStatus").load("../static/html/alert_OK.html");
-            fileRead()
+            document.getElementById("obfuscateButton").setAttribute("disabled", "")
+            document.getElementById("apkExtractSpinnerHeader").removeAttribute("hidden");
+            document.getElementById("apkExtractSpinner").removeAttribute("hidden");
+            // document.getElementById("apkExtractSpinner").removeAttribute("hidden");
+            apkExtract()
         },
         error: function() {
             $("#uploadStatus").load("../static/html/alert_fail.html");
@@ -28,31 +37,32 @@ function upload(){
     });
 }
 
-function fileRead(){
+function apkExtract(){
     $.ajax({
-        url: '/readfile',
+        url: '/extractapk',
         type: 'POST',
         success: function(response) {
-            document.getElementById("initialCodeHeader").removeAttribute("hidden");
-            document.getElementById("initialCode").innerHTML=response;
-            smaliModify();
+            document.getElementById("apkExtractWrapper").removeAttribute("hidden");
+            document.getElementById("apkExtractHeader").removeAttribute("hidden");
+            document.getElementById("apkExtractSpinnerWrapper").remove();
+            document.getElementById("apkExtractStatus").innerHTML=response;
         },
         error: function() {
         }
     });
 }
 
-function smaliModify(){
-    $.ajax({
-        url: '/modifysmali',
-        type: 'POST',
-        success: function(response) {
-            fileCompare();
-        },
-        error: function() {
-        }
-    });
-}
+// function smaliModify(){
+//     $.ajax({
+//         url: '/modifysmali',
+//         type: 'POST',
+//         success: function(response) {
+//             fileCompare();
+//         },
+//         error: function() {
+//         }
+//     });
+// }
 
 function fileCompare(){
     $.ajax({

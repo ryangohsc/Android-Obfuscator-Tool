@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, Response, jsonify, session
 from werkzeug.utils import secure_filename
-import secrets, difflib, shutil, os, glob
+import secrets, difflib, shutil, os, glob, subprocess
+
+from modules import apk
 
 IP = "127.0.0.1"
 PORT = "80"
@@ -10,7 +12,8 @@ SECRET = secrets.token_urlsafe(16)
 app = Flask(__name__)
 app.secret_key = SECRET
 
-app.config["UPLOAD_FOLDER"] = "dumpster/"
+app.config["WORKING_FOLDER"] = "dumpster/"
+app.config["APKTOOL_LOCATION"] = "jars/apktool_2.6.1.jar"
 
 @app.route("/")
 def start():
@@ -22,6 +25,7 @@ def cleanup():
 	for f in dumpsterFiles:
 		try:
 			os.remove(f)
+			shutil.rmtree(f)
 		except OSError as e:
 			print(e)
 
@@ -40,19 +44,28 @@ def uploadFile():
 		orig_file = request.files["file"]
 		orig_fileName = secure_filename(orig_file.filename)
 		session["filename"] = orig_fileName
-		orig_file.save(app.config["UPLOAD_FOLDER"] + orig_fileName)
+		orig_file.save(app.config["WORKING_FOLDER"] + orig_fileName)
 
 		mod_fileName = "modded_" + orig_fileName
 		session["mod_filename"] = mod_fileName
 
-		shutil.copy(app.config["UPLOAD_FOLDER"] + orig_fileName, app.config["UPLOAD_FOLDER"] + mod_fileName)
+		shutil.copy(app.config["WORKING_FOLDER"] + orig_fileName, app.config["WORKING_FOLDER"] + mod_fileName)
 	
 	return jsonify({'Status': 'File upload OK!'}), 200
+
+@app.route("/extractapk", methods=['GET', 'POST'])
+def extractapk():
+	result = apk.extract(app.config["APKTOOL_LOCATION"],
+						app.config["WORKING_FOLDER"],
+						session["filename"])
+
+	# return jsonify({'Status': 'APK Extraction OK!'}), 200
+	return result
 
 @app.route("/readfile", methods=['GET', 'POST'])
 def readFile():
 	filename = session["filename"]
-	file = open(app.config["UPLOAD_FOLDER"] + filename, "r")
+	file = open(app.config["WORKING_FOLDER"] + filename, "r")
 
 	if filename.lower().endswith('.smali'):
 		return file.read()
@@ -62,7 +75,7 @@ def readFile():
 @app.route("/modifysmali", methods=['GET', 'POST'])
 def modifySmali():
 	mod_fileName = session["mod_filename"]
-	with open(app.config["UPLOAD_FOLDER"] + mod_fileName, "r+") as f:
+	with open(app.config["WORKING_FOLDER"] + mod_fileName, "r+") as f:
 		content = f.read()
 		f.seek(0, 0)
 		f.write("TEST INSERT\n")
@@ -74,8 +87,8 @@ def compareFile():
 	orig_filename = session["filename"]
 	mod_filename = "modded_" + orig_filename
 
-	orig_file = open(app.config["UPLOAD_FOLDER"] + orig_filename, "r")
-	mod_file = open(app.config["UPLOAD_FOLDER"] + mod_filename, "r")
+	orig_file = open(app.config["WORKING_FOLDER"] + orig_filename, "r")
+	mod_file = open(app.config["WORKING_FOLDER"] + mod_filename, "r")
 
 	compare = difflib.HtmlDiff(wrapcolumn=60)
 
