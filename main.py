@@ -2,10 +2,10 @@ from flask import Flask, render_template, request, Response, jsonify, session
 from werkzeug.utils import secure_filename
 import secrets, difflib, shutil, os, glob, subprocess
 
-from modules import apk
+from modules import apk, smali
 
 IP = "127.0.0.1"
-PORT = "80"
+PORT = "8080"
 DEBUG = True
 SECRET = secrets.token_urlsafe(16)
 
@@ -21,20 +21,15 @@ def start():
 
 @app.route("/cleanup", methods=['GET', 'POST'])
 def cleanup():
-	dumpsterFiles = glob.glob("dumpster/*")
-	for f in dumpsterFiles:
-		try:
-			os.remove(f)
-			shutil.rmtree(f)
-		except OSError as e:
-			print(e)
+	# Cleanup and recreate dumpster/work folder
+	shutil.rmtree("dumpster/")
+	os.makedirs("dumpster/")
+	open("dumpster/.ignore", 'a').close()
 
-	tmpHTMLFiles = glob.glob("static/tmp/*")
-	for f in tmpHTMLFiles:
-		try:
-			os.remove(f)
-		except OSError as e:
-			print(e)
+	# Cleanup and recreate difflib HTML folder
+	shutil.rmtree("static/tmp/")
+	os.makedirs("static/tmp/")
+	open("static/tmp/.ignore", 'a').close()
 
 	return jsonify({'Status': 'Cleanup OK!'}), 200
 
@@ -46,10 +41,9 @@ def uploadFile():
 		session["filename"] = orig_fileName
 		orig_file.save(app.config["WORKING_FOLDER"] + orig_fileName)
 
-		mod_fileName = "modded_" + orig_fileName
-		session["mod_filename"] = mod_fileName
-
-		shutil.copy(app.config["WORKING_FOLDER"] + orig_fileName, app.config["WORKING_FOLDER"] + mod_fileName)
+		# mod_fileName = "modded_" + orig_fileName
+		# session["mod_filename"] = mod_fileName
+		# shutil.copy(app.config["WORKING_FOLDER"] + orig_fileName, app.config["WORKING_FOLDER"] + mod_fileName)
 	
 	return jsonify({'Status': 'File upload OK!'}), 200
 
@@ -62,42 +56,48 @@ def extractapk():
 	# return jsonify({'Status': 'APK Extraction OK!'}), 200
 	return result
 
-@app.route("/readfile", methods=['GET', 'POST'])
-def readFile():
-	filename = session["filename"]
-	file = open(app.config["WORKING_FOLDER"] + filename, "r")
+@app.route("/locatesmali", methods=['GET', 'POST'])
+def locatesmali():
+	count = smali.locate(app.config["WORKING_FOLDER"],
+						session["filename"])
+	return count
 
-	if filename.lower().endswith('.smali'):
-		return file.read()
-	else:
-		return filename
+# @app.route("/readfile", methods=['GET', 'POST'])
+# def readFile():
+# 	filename = session["filename"]
+# 	file = open(app.config["WORKING_FOLDER"] + filename, "r")
 
-@app.route("/modifysmali", methods=['GET', 'POST'])
-def modifySmali():
-	mod_fileName = session["mod_filename"]
-	with open(app.config["WORKING_FOLDER"] + mod_fileName, "r+") as f:
-		content = f.read()
-		f.seek(0, 0)
-		f.write("TEST INSERT\n")
+# 	if filename.lower().endswith('.smali'):
+# 		return file.read()
+# 	else:
+# 		return filename
 
-	return jsonify({'Status': 'SMALI Modification OK!'}), 200
+# @app.route("/modifysmali", methods=['GET', 'POST'])
+# def modifySmali():
+# 	mod_fileName = session["mod_filename"]
+# 	with open(app.config["WORKING_FOLDER"] + mod_fileName, "r+") as f:
+# 		content = f.read()
+# 		f.seek(0, 0)
+# 		f.write("TEST INSERT\n")
 
-@app.route("/comparefile", methods=['GET', 'POST'])
-def compareFile():
-	orig_filename = session["filename"]
-	mod_filename = "modded_" + orig_filename
+# 	return jsonify({'Status': 'SMALI Modification OK!'}), 200
 
-	orig_file = open(app.config["WORKING_FOLDER"] + orig_filename, "r")
-	mod_file = open(app.config["WORKING_FOLDER"] + mod_filename, "r")
+# @app.route("/comparefile", methods=['GET', 'POST'])
+# def compareFile():
+# 	orig_filename = session["filename"]
+# 	mod_filename = "modded_" + orig_filename
 
-	compare = difflib.HtmlDiff(wrapcolumn=60)
+# 	orig_file = open(app.config["WORKING_FOLDER"] + orig_filename, "r")
+# 	mod_file = open(app.config["WORKING_FOLDER"] + mod_filename, "r")
 
-	html = compare.make_file(orig_file, mod_file)
+# 	compare = difflib.HtmlDiff(wrapcolumn=60)
 
-	with open('static/tmp/output.html', 'w') as fh:
-		fh.write(html)
+# 	html = compare.make_file(orig_file, mod_file)
 
-	return jsonify({'Status': 'File compare OK!'}), 200
+# 	with open('static/tmp/output.html', 'w') as fh:
+# 		fh.write(html)
+
+# 	return jsonify({'Status': 'File compare OK!'}), 200
 
 if __name__ == "__main__":
 	app.run(host=IP, port=PORT, debug=DEBUG)
