@@ -15,13 +15,13 @@ class UnconditionalJump:
                         output_file.write(line)
                         edit_method = True
                     elif line.startswith(".end method") and edit_method:
-                        output_file.write("\n\t:after_last_instruction\n\n")
-                        output_file.write("\tgoto/32 :before_first_instruction\n\n")
+                        output_file.write("\n\t:zPJwAPOogfLGQLoD\n\n")
+                        output_file.write("\tgoto/32 :GpQrBfyCJxjiSUAj\n\n")
                         output_file.write(line)
                         edit_method = False
                     elif edit_method and self.locals_pattern.match(line):
-                        output_file.write("\n\tgoto/32 :after_last_instruction\n\n")
-                        output_file.write("\t:before_first_instruction\n")
+                        output_file.write("\n\tgoto/32 :zPJwAPOogfLGQLoD\n\n")
+                        output_file.write("\t:GpQrBfyCJxjiSUAj\n")
                         output_file.write(line)
                     else:
                         output_file.write(line)
