@@ -12,7 +12,6 @@ def locate(APK_LOCATION, APK_NAME):
         for file in files:
             if file.endswith(EXT):
                 count += 1;
-                print(os.path.join(root, file))
                 tmpFile.write(os.path.join(root, file) + "\n")
 
     tmpFile.close()
