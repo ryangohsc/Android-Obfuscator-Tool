@@ -37,7 +37,7 @@ class DefunctClassInsertion:
         Returns a cryptographically secure random string
         :return:
         """
-        return ''.join(random.SystemRandom().choice(string.ascii_letters) for _ in range(32))
+        return ''.join(random.SystemRandom().choice(string.ascii_letters) for _ in range(16))
 
     def open_file(self):
         with open("defunct_class.txt", "r") as f:

@@ -68,7 +68,7 @@ class Reorder:
         Returns a cryptographically secure random string
         :return:
         """
-        return ''.join(random.SystemRandom().choice(string.ascii_letters) for _ in range(32))
+        return ''.join(random.SystemRandom().choice(string.ascii_letters) for _ in range(16))
 
     def run(self, arg_filename):
         try:
@@ -87,6 +87,11 @@ class Reorder:
                         edit_method = True
                         inside_try_catch = False
                         jump_count = 0
+
+                    elif line.startswith(".end method") and edit_method:
+                        output_file.write(line)
+                        edit_method = False
+                        inside_try_catch = False
 
                     elif edit_method:
                         # Inside method. Check if this line contains an op code at
@@ -129,12 +134,6 @@ class Reorder:
                                 output_file.write(line)
                         else:
                             output_file.write(line)
-
-                    elif line.startswith(".end method") and edit_method:
-                        output_file.write(line)
-                        edit_method = False
-                        inside_try_catch = False
-
                     else:
                         output_file.write(line)
 
@@ -152,9 +151,15 @@ class Reorder:
                         code_blocks = []
                         current_code_block = None
 
+                    elif line.startswith(".end method") and edit_method:
+                        edit_method = False
+                        random.shuffle(code_blocks)
+                        for code_block in code_blocks:
+                            output_file.write(code_block.smali_code)
+                        output_file.write(line)
+
                     elif edit_method:
-                        # Inside method. Check if this line is marked with
-                        # a special label.
+                        # Inside method. Check if this line is marked with a special label.
                         if line.startswith("#!code_block!#"):
                             block_count += 1
                             current_code_block = CodeBlock(block_count, "")
@@ -164,13 +169,6 @@ class Reorder:
                                 current_code_block.add_smali_code_to_block(line)
                             else:
                                 output_file.write(line)
-
-                    elif line.startswith(".end method") and edit_method:
-                        edit_method = False
-                        random.shuffle(code_blocks)
-                        for code_block in code_blocks:
-                            output_file.write(code_block.smali_code)
-                        output_file.write(line)
 
                     else:
                         output_file.write(line)

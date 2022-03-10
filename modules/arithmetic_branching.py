@@ -11,27 +11,37 @@ class ArithmeticBranching:
 
     def random_number(self):
         """
-        Returns a cryptographically secure random number between 1 and 32
+        Returns a cryptographically secure random number between 1 and 16
         :return:
         """
         secure_rng = secrets.SystemRandom()
-        return secure_rng.randrange(1, 32)
+        return secure_rng.randrange(1, 16)
 
     def random_string(self):
         """
         Returns a cryptographically secure random string
         :return:
         """
-        return ''.join(random.SystemRandom().choice(string.ascii_letters) for _ in range(32))
+        return ''.join(random.SystemRandom().choice(string.ascii_letters) for _ in range(16))
 
     def run(self, arg_filename):
         try:
             with utils.inplace_edit_file(arg_filename) as (input_file, output_file):
                 edit_method = False
+                start_label = None
+                end_label = None
                 for line in input_file:
                     if line.startswith(".method ") and " abstract " not in line and " native " not in line and not edit_method:
                         output_file.write(line)
                         edit_method = True
+                    elif line.startswith(".end method") and edit_method:
+                        if start_label and end_label:
+                            output_file.write("\t:%s\n" % end_label)
+                            output_file.write("\tgoto/32 :%s\n" % start_label)
+                            start_label = None
+                            end_label = None
+                        output_file.write(line)
+                        edit_method = False
                     elif edit_method:
                         output_file.write(line)
                         match = self.locals_pattern.match(line)
@@ -49,14 +59,6 @@ class ArithmeticBranching:
                             output_file.write("\tgoto/32 :%s\n" % end_label)
                             output_file.write("\t:%s\n" % tmp_label)
                             output_file.write("\t:%s\n" % start_label)
-                    elif line.startswith(".end method") and edit_method:
-                        if start_label and end_label:
-                            output_file.write("\t:%s\n" % end_label)
-                            output_file.write("\tgoto/32 :%s\n" % start_label)
-                            start_label = None
-                            end_label = None
-                        output_file.write(line)
-                        edit_method = False
                     else:
                         output_file.write(line)
         except Exception as e:
