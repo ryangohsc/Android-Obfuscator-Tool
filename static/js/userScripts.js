@@ -44,7 +44,7 @@ function upload(){
         success: function() {
             //
             // Visual updates
-            $("#uploadStatus").load("../static/html/alert_OK.html");
+            // $("#uploadStatus").load("../static/html/alert_OK.html");
             document.getElementById("obfuscateButton").setAttribute("disabled", "")
             document.getElementById("apkExtractSpinnerHeader").removeAttribute("hidden");
             document.getElementById("apkExtractSpinner").removeAttribute("hidden");
@@ -53,7 +53,7 @@ function upload(){
             apkExtract()
         },
         error: function() {
-            $("#uploadStatus").load("../static/html/alert_fail.html");
+            // $("#uploadStatus").load("../static/html/alert_fail.html");
         }
     });
 }
@@ -95,6 +95,7 @@ function apkExtract(){
  * @URL         - /locatesmali
  * @return      - Location of all .smali files in a .txt file
  * @OnSuccess   - Visual Changes to HTML
+ *              - Trigger obfuscate()
  */
 function locateSmali(){
     $.ajax({
@@ -108,33 +109,50 @@ function locateSmali(){
             // Display output
             $("#smaliFilesFoundCount").html(response)
             $("#smaliFilesFoundList").load("../static/tmp/smali.txt");
+            //
+            // Next step / action
+            obfuscate()
         },
         error: function() {
         }
     });
 }
 
-// function smaliModify(){
-//     $.ajax({
-//         url: '/modifysmali',
-//         type: 'POST',
-//         success: function(response) {
-//             fileCompare();
-//         },
-//         error: function() {
-//         }
-//     });
-// }
+/**
+ * Upon successful locateSmali()
+ * Proceed with running obfuscating actions
+ * @REQUEST     - GET
+ * @URL         - /obfuscate
+ * @return      - HTTP 200
+ * @OnSuccess   - Trigger fileCompare()
+ */
+function obfuscate(){
+    $.ajax({
+        url: '/obfuscate',
+        type: 'GET',
+        success: function(response) {
+            //
+            // Next step / action
+            fileCompare()
+        },
+        error: function() {
+        }
+    });
+}
 
-// function fileCompare(){
-//     $.ajax({
-//         url: '/comparefile',
-//         type: 'POST',
-//         success: function(response) {
-//             document.getElementById("fileCompareHeader").removeAttribute("hidden");
-//             $("#fileCompareZone").load("../static/tmp/output.html");
-//         },
-//         error: function() {
-//         }
-//     });
-// }
+function fileCompare(){
+    $.ajax({
+        url: '/comparefile',
+        type: 'POST',
+        success: function(response) {
+            //
+            // Visual updates
+            document.getElementById("fileCompareWrapper").removeAttribute("hidden");
+            document.getElementById("fileCompareHeader").removeAttribute("hidden");
+            // Display output
+            $("#fileCompare").load("../static/tmp/output.html");
+        },
+        error: function() {
+        }
+    });
+}
