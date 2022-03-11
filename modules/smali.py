@@ -1,10 +1,11 @@
 import os
 
 def locate(APK_LOCATION, APK_NAME):
-    APK_FOLDER = APK_LOCATION + APK_NAME.replace('.apk', '')
+    APK_FOLDER = os.path.join(APK_LOCATION, APK_NAME.replace('.apk', ''))
     EXT = ".smali"
 
-    tmpFile = open("static/tmp/smali.txt", 'w')
+    p = os.path.join("static", "tmp", "smali.txt")
+    tmpFile = open(p, 'w')
 
     count = 0
 

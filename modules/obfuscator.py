@@ -1,10 +1,12 @@
+import os
 from .unconditional_jump import UnconditionalJump
 
 def run():
 
     #
     # Load locations of all smali files
-    f = open("static/tmp/smali.txt", "r")
+    p = os.path.join("static", "tmp", "smali.txt")
+    f = open(p, "r")
     smaliLocations = f.readlines()
     f.close()
 
