@@ -1,0 +1,6 @@
+{% for num in range(count) %}
+    <div id="fileCompareWrapper{{loop.index}}" class="row bg-light border rounded-3 mt-3 mb-3" >
+        <h4 id="fileCompareHeader{{loop.index}}" class="pt-3 pb-1"><code>{{loop.index}}</code></h4>
+        <iframe src="../static/tmp/{{loop.index}}.html" width="100%" height="600px"></iframe>
+    </div>
+{% endfor %}

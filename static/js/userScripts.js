@@ -140,17 +140,44 @@ function obfuscate(){
     });
 }
 
+/**
+ * Upon successful obfuscate()
+ * Proceed with running comparing files in the background
+ * @REQUEST     - GET
+ * @URL         - /comparefile
+ * @return      - HTTP 200
+ * @OnSuccess   - Trigger fileCompareLoad()
+ */
 function fileCompare(){
     $.ajax({
         url: '/comparefile',
         type: 'POST',
         success: function(response) {
             //
-            // Visual updates
-            document.getElementById("fileCompareWrapper").removeAttribute("hidden");
-            document.getElementById("fileCompareHeader").removeAttribute("hidden");
+            // Next step / action
+            fileCompareLoad()
+        },
+        error: function() {
+        }
+    });
+}
+
+/**
+ * Upon successful fileCompaore()
+ * Proceed with generating and displaying DIFF files
+ * @REQUEST     - GET
+ * @URL         - /comparefileload
+ * @return      - File compaore HTML data
+ * @OnSuccess   - Load visual response
+ */
+function fileCompareLoad(){
+    $.ajax({
+        url: '/comparefileload',
+        type: 'POST',
+        success: function(response) {
+            //
             // Display output
-            $("#fileCompare").load("../static/tmp/defunct_class_insertion.html");
+            $("#fileCompareParent").append(response.data);
         },
         error: function() {
         }

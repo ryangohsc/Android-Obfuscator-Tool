@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, Response, jsonify, session
 from werkzeug.utils import secure_filename
-import secrets, difflib, shutil, os, glob, subprocess
+import secrets, shutil, os, glob, subprocess
 
 from modules import apk, smali, obfuscator, compare
 
@@ -30,7 +30,6 @@ def cleanup():
 	os.makedirs(WORKING_FOLDER)
 	wf = os.path.join(WORKING_FOLDER, ".ignore")
 	open(wf, 'a').close()
-
 
 	# Cleanup and recreate difflib HTML folder
 	shutil.rmtree(TMP_ASSET_FOLDER)
@@ -78,11 +77,16 @@ def obfuscate():
 
 @app.route("/comparefile", methods=['GET', 'POST'])
 def compareFile():
-	compare.generate(TMP_ASSET_FOLDER,
-					BASE_SMALI_LOC_FILE,
-					WORKING_SMALI_LOC_FILE)
+	count = compare.generate(TMP_ASSET_FOLDER,
+							BASE_SMALI_LOC_FILE,
+							WORKING_SMALI_LOC_FILE)
 
-	return jsonify({'Status': 'File compare OK!'}), 200
+	session["COUNT"] = count
+	return jsonify({'Status': "File comparisons OK!"}), 200
+
+@app.route("/comparefileload", methods=['GET', 'POST'])
+def compareFileLoad():
+	return jsonify({'data': render_template("file_compare.html", count=session["COUNT"])}), 200
 
 if __name__ == "__main__":
 	app.run(host=IP, port=PORT, debug=DEBUG)
