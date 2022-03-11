@@ -69,7 +69,3 @@ class DefunctClassInsertion:
             with open(write_name, "w") as f:
                 f.write(defunct_class)
 
-
-if __name__ == "__main__":
-    test = DefunctClassInsertion()
-    test.run()

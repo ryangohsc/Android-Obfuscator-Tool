@@ -184,8 +184,3 @@ class CodeBlock:
     def add_smali_code_to_block(self, smali_code):
         self.smali_code += smali_code
 
-
-if __name__ == "__main__":
-    test = Reorder()
-    filename = "MainActivity.smali"
-    test.run(filename)

@@ -63,9 +63,3 @@ class ArithmeticBranching:
                         output_file.write(line)
         except Exception as e:
             print(e)
-
-
-if __name__ == "__main__":
-    test = ArithmeticBranching()
-    filename = "MainActivity.smali"
-    test.run(filename)

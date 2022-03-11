@@ -23,8 +23,3 @@ class DefunctMethodInsertion:
         except Exception as e:
             print(e)
 
-
-if __name__ == "__main__":
-    test = DefunctMethodInsertion()
-    filename = "MainActivity.smali"
-    test.run(filename)

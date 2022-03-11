@@ -28,9 +28,3 @@ class UnconditionalJump:
                         output_file.write(line)
         except Exception as e:
             print(e)
-
-
-if __name__ == "__main__":
-    test = UnconditionalJump()
-    filename = "MainActivity.smali"
-    test.run(filename)
