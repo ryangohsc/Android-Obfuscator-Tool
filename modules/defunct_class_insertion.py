@@ -5,13 +5,14 @@ import re
 
 
 class DefunctClassInsertion:
-    def get_smali_folders(self):
+    def get_smali_folders(self, WORKING_COPY_DIR):
         """
         Gets all main smali folders
         :return: smali_folder_list
         """
         smali_folder_list = []
-        extracted_apk_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "dumpster")
+        # extracted_apk_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "dumpster")
+        extracted_apk_folder = WORKING_COPY_DIR
         for root, subdirs, files in os.walk(extracted_apk_folder):
             for folders in subdirs:
                 if "smali" in folders:
@@ -19,13 +20,13 @@ class DefunctClassInsertion:
                     smali_folder_list.append(x)
         return smali_folder_list
 
-    def get_end_path(self):
+    def get_end_path(self, WORKING_COPY_DIR):
         """
         Gets all final subdirectories where the smali files reside
         :return: final_list
         """
         final_subdir_list = []
-        folder_list = self.get_smali_folders()
+        folder_list = self.get_smali_folders(WORKING_COPY_DIR)
         for i in folder_list:
             for root, subdirs, files in os.walk(i):
                 for file in files:
@@ -62,8 +63,8 @@ class DefunctClassInsertion:
         with open(p, 'a') as f:
             f.write(file_path + "\n")
 
-    def run(self):
-        all_paths = self.get_end_path()
+    def run(self, WORKING_COPY_DIR):
+        all_paths = self.get_end_path(WORKING_COPY_DIR)
         for path in all_paths:
             class_name = re.sub(r'^.*?smali.', '', path)
             class_name = re.sub(r'^.*?classes[0-9].', '', class_name)
