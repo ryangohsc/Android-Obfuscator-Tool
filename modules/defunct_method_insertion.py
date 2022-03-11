@@ -3,10 +3,11 @@ import utils
 
 
 class DefunctMethodInsertion:
-    def __init__(self):
-        pass
-
     def open_file(self):
+        """
+        Opens a file and reads it
+        :return: f.read()
+        """
         with open("defunct_method.txt", "r") as f:
             return f.read()
 

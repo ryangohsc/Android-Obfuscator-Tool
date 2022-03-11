@@ -5,21 +5,26 @@ import re
 
 
 class DefunctClassInsertion:
-    def __init__(self):
-        pass
-
     def get_smali_folders(self):
-        test_list = []
-        test = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "dumpster")
-        for root, subdirs, files in os.walk(test):
+        """
+        Gets all main smali folders
+        :return: smali_folder_list
+        """
+        smali_folder_list = []
+        extracted_apk_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "dumpster")
+        for root, subdirs, files in os.walk(extracted_apk_folder):
             for folders in subdirs:
                 if "smali" in folders:
                     x = os.path.join(root, folders)
-                    test_list.append(x)
-        return test_list
+                    smali_folder_list.append(x)
+        return smali_folder_list
 
     def get_end_path(self):
-        final_list = []
+        """
+        Gets all final subdirectories where the smali files reside
+        :return: final_list
+        """
+        final_subdir_list = []
         folder_list = self.get_smali_folders()
         for i in folder_list:
             for root, subdirs, files in os.walk(i):
@@ -27,9 +32,8 @@ class DefunctClassInsertion:
                     if file.endswith(".smali"):
                         x = os.path.join(root, file)
                         x = os.path.dirname(x)
-                        final_list.append(x)
-        final_list = list(set(final_list))
-        print(final_list)
+                        final_subdir_list.append(x)
+        final_list = list(set(final_subdir_list))
         return final_list
 
     def random_string(self):
@@ -40,6 +44,10 @@ class DefunctClassInsertion:
         return ''.join(random.SystemRandom().choice(string.ascii_letters) for _ in range(16))
 
     def open_file(self):
+        """
+        Opens a file and reads it
+        :return: f.read()
+        """
         with open("defunct_class.txt", "r") as f:
             return f.read()
 
@@ -49,7 +57,6 @@ class DefunctClassInsertion:
             class_name = re.sub(r'^.*?smali.', '', path)
             class_name = re.sub(r'^.*?classes[0-9].', '', class_name)
             class_name = class_name.replace("\\", "/")
-            print(class_name)
             defunct_class = self.open_file()
             random_name = self.random_string()
             defunct_class = defunct_class.replace("*ClassName*", class_name + "/" + random_name)
@@ -57,9 +64,7 @@ class DefunctClassInsertion:
             defunct_class = defunct_class.replace("*String2*", self.random_string())
             defunct_class = defunct_class.replace("*MethodName*", self.random_string())
             defunct_class = defunct_class.replace("*SourceName*", self.random_string())
-            print(defunct_class)
             write_name = os.path.join(path, random_name + ".smali")
-            print(write_name)
             with open(write_name, "w") as f:
                 f.write(defunct_class)
 

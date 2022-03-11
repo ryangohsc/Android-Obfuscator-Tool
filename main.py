@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, Response, jsonify, session
 from werkzeug.utils import secure_filename
 import secrets, difflib, shutil, os, glob, subprocess
 
-from modules import apk, smali
+from modules import apk, smali, obfuscator
 
 IP = "127.0.0.1"
 PORT = "8080"
@@ -36,15 +36,11 @@ def cleanup():
 @app.route("/upload", methods=['GET', 'POST'])
 def uploadFile():
 	if request.method == "POST":
-		orig_file = request.files["file"]
-		orig_fileName = secure_filename(orig_file.filename)
-		session["filename"] = orig_fileName
-		orig_file.save(app.config["WORKING_FOLDER"] + orig_fileName)
+		file = request.files["file"]
+		fileName = secure_filename(file.filename)
+		session["filename"] = fileName
+		file.save(app.config["WORKING_FOLDER"] + fileName)
 
-		# mod_fileName = "modded_" + orig_fileName
-		# session["mod_filename"] = mod_fileName
-		# shutil.copy(app.config["WORKING_FOLDER"] + orig_fileName, app.config["WORKING_FOLDER"] + mod_fileName)
-	
 	return jsonify({'Status': 'File upload OK!'}), 200
 
 @app.route("/extractapk", methods=['GET', 'POST'])
@@ -53,51 +49,38 @@ def extractapk():
 						app.config["WORKING_FOLDER"],
 						session["filename"])
 
-	# return jsonify({'Status': 'APK Extraction OK!'}), 200
 	return result
 
 @app.route("/locatesmali", methods=['GET', 'POST'])
 def locatesmali():
 	count = smali.locate(app.config["WORKING_FOLDER"],
 						session["filename"])
+
 	return count
 
-# @app.route("/readfile", methods=['GET', 'POST'])
-# def readFile():
-# 	filename = session["filename"]
-# 	file = open(app.config["WORKING_FOLDER"] + filename, "r")
+@app.route("/obfuscate", methods=['GET', 'POST'])
+def obfuscate():
+	obfuscator.run()
 
-# 	if filename.lower().endswith('.smali'):
-# 		return file.read()
-# 	else:
-# 		return filename
+	return jsonify({'Status': 'Obfuscation OK!'}), 200
 
-# @app.route("/modifysmali", methods=['GET', 'POST'])
-# def modifySmali():
-# 	mod_fileName = session["mod_filename"]
-# 	with open(app.config["WORKING_FOLDER"] + mod_fileName, "r+") as f:
-# 		content = f.read()
-# 		f.seek(0, 0)
-# 		f.write("TEST INSERT\n")
+@app.route("/comparefile", methods=['GET', 'POST'])
+def compareFile():
+	workingCopyDir = app.config["WORKING_FOLDER"] + session["filename"].replace('.apk', '')
+	baselineCopyDir = app.config["WORKING_FOLDER"] + "BASE_" + session["filename"].replace('.apk', '')
 
-# 	return jsonify({'Status': 'SMALI Modification OK!'}), 200
+	#
+	# SAMPLE TO TEST IF COMPARE WORKS
+	#
+	working = open(workingCopyDir + "/smali/com/securitycompass/androidlabs/base/AccountsActivity.smali", "r")
+	baseline = open(baselineCopyDir + "/smali/com/securitycompass/androidlabs/base/AccountsActivity.smali", "r")
+	compare = difflib.HtmlDiff(wrapcolumn=62)
+	html = compare.make_file(baseline, working)
 
-# @app.route("/comparefile", methods=['GET', 'POST'])
-# def compareFile():
-# 	orig_filename = session["filename"]
-# 	mod_filename = "modded_" + orig_filename
+	with open('static/tmp/output.html', 'w') as fh:
+		fh.write(html)
 
-# 	orig_file = open(app.config["WORKING_FOLDER"] + orig_filename, "r")
-# 	mod_file = open(app.config["WORKING_FOLDER"] + mod_filename, "r")
-
-# 	compare = difflib.HtmlDiff(wrapcolumn=60)
-
-# 	html = compare.make_file(orig_file, mod_file)
-
-# 	with open('static/tmp/output.html', 'w') as fh:
-# 		fh.write(html)
-
-# 	return jsonify({'Status': 'File compare OK!'}), 200
+	return jsonify({'Status': 'File compare OK!'}), 200
 
 if __name__ == "__main__":
 	app.run(host=IP, port=PORT, debug=DEBUG)

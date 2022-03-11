@@ -1,5 +1,5 @@
 .method public static OFLog(Ljava/lang/String;Ljava/lang/String;)V
-    .registers 2
+    .locals 2
     .param p0, "tag"
     .param p1, "msg"
 
