@@ -1,6 +1,6 @@
 import string
 import random
-import utils
+from utils import *
 import re
 from typing import List
 
@@ -77,7 +77,7 @@ class Reorder:
                 r"\s+(?P<if_op_code>\S+)"
                 r"\s(?P<register>[vp0-9,\s]+?),\s:(?P<goto_label>\S+)"
             )
-            with utils.inplace_edit_file(arg_filename) as (input_file, output_file):
+            with inplace_edit_file(arg_filename) as (input_file, output_file):
                 edit_method = False
                 inside_try_catch = False
                 jump_count = 0
@@ -137,7 +137,7 @@ class Reorder:
                     else:
                         output_file.write(line)
 
-            with utils.inplace_edit_file(arg_filename) as (input_file, output_file):
+            with inplace_edit_file(arg_filename) as (input_file, output_file):
                 edit_method = False
                 block_count = 0
                 code_blocks: List[CodeBlock] = []

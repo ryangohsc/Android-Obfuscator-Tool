@@ -1,5 +1,6 @@
 import re
-from .utils import *
+from utils import *
+
 
 class UnconditionalJump:
     def __init__(self):
@@ -10,7 +11,8 @@ class UnconditionalJump:
             with inplace_edit_file(arg_filename) as (input_file, output_file):
                 edit_method = False
                 for line in input_file:
-                    if line.startswith(".method ") and " abstract " not in line and " native " not in line and not edit_method:
+                    if line.startswith(
+                            ".method ") and " abstract " not in line and " native " not in line and not edit_method:
                         output_file.write(line)
                         edit_method = True
                     elif line.startswith(".end method") and edit_method:

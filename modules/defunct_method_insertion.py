@@ -1,5 +1,5 @@
 import re
-import utils
+from utils import *
 
 
 class DefunctMethodInsertion:
@@ -13,7 +13,7 @@ class DefunctMethodInsertion:
 
     def run(self, arg_filename):
         try:
-            with utils.inplace_edit_file(arg_filename) as (input_file, output_file):
+            with inplace_edit_file(arg_filename) as (input_file, output_file):
                 for line in input_file:
                     if re.search(r'^([ ]*?)# direct methods', line) is not None:
                         output_file.write(self.open_file())

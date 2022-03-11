@@ -2,7 +2,7 @@ import random
 import re
 import secrets
 import string
-import utils
+from utils import *
 
 
 class ArithmeticBranching:
@@ -26,7 +26,7 @@ class ArithmeticBranching:
 
     def run(self, arg_filename):
         try:
-            with utils.inplace_edit_file(arg_filename) as (input_file, output_file):
+            with inplace_edit_file(arg_filename) as (input_file, output_file):
                 edit_method = False
                 start_label = None
                 end_label = None
