@@ -150,7 +150,7 @@ function fileCompare(){
             document.getElementById("fileCompareWrapper").removeAttribute("hidden");
             document.getElementById("fileCompareHeader").removeAttribute("hidden");
             // Display output
-            $("#fileCompare").load("../static/tmp/output.html");
+            $("#fileCompare").load("../static/tmp/defunct_class_insertion.html");
         },
         error: function() {
         }
