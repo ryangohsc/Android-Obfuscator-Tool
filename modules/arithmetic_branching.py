@@ -2,7 +2,7 @@ import random
 import re
 import secrets
 import string
-from utils import *
+from .utils import *
 
 
 class ArithmeticBranching:

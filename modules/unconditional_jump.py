@@ -1,5 +1,5 @@
 import re
-from utils import *
+from .utils import *
 
 
 class UnconditionalJump:

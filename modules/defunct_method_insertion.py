@@ -1,5 +1,5 @@
 import re
-from utils import *
+from .utils import *
 
 
 class DefunctMethodInsertion:
@@ -8,7 +8,8 @@ class DefunctMethodInsertion:
         Opens a file and reads it
         :return: f.read()
         """
-        with open("defunct_method.txt", "r") as f:
+        directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), "modules", "defunct_method.txt")
+        with open(directory, "r") as f:
             return f.read()
 
     def run(self, arg_filename):

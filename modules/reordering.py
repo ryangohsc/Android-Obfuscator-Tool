@@ -1,6 +1,6 @@
 import string
 import random
-from utils import *
+from .utils import *
 import re
 from typing import List
 
