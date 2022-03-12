@@ -48,8 +48,19 @@ class DefunctClassInsertion:
         Opens a file and reads it
         :return: f.read()
         """
-        with open("defunct_class.txt", "r") as f:
+        directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "modules", "defunct_class.txt")
+        with open(directory, "r") as f:
             return f.read()
+
+    def append_to_text(self, file_path):
+        """
+        Appends generated files to smali.txt
+        :param file_path:
+        :return: None
+        """
+        p = os.path.join("static", "tmp", "smali.txt")
+        with open(p, 'a') as f:
+            f.write(file_path + "\n")
 
     def run(self):
         all_paths = self.get_end_path()
@@ -65,10 +76,7 @@ class DefunctClassInsertion:
             defunct_class = defunct_class.replace("*MethodName*", self.random_string())
             defunct_class = defunct_class.replace("*SourceName*", self.random_string())
             write_name = os.path.join(path, random_name + ".smali")
+            smali_path = re.sub("^(.*)(?=dumpster)", "", write_name)
             with open(write_name, "w") as f:
                 f.write(defunct_class)
-
-
-if __name__ == "__main__":
-    test = DefunctClassInsertion()
-    test.run()
+                self.append_to_text(smali_path)
