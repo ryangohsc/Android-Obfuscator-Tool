@@ -140,17 +140,68 @@ function obfuscate(){
     });
 }
 
+/**
+ * Upon successful obfuscate()
+ * Proceed with running comparing files in the background
+ * @REQUEST     - GET
+ * @URL         - /comparefile
+ * @return      - HTTP 200
+ * @OnSuccess   - Trigger fileCompareLoad()
+ */
 function fileCompare(){
     $.ajax({
         url: '/comparefile',
         type: 'POST',
         success: function(response) {
             //
-            // Visual updates
-            document.getElementById("fileCompareWrapper").removeAttribute("hidden");
-            document.getElementById("fileCompareHeader").removeAttribute("hidden");
+            // Next step / action
+            fileCompareLoad()
+        },
+        error: function() {
+        }
+    });
+}
+
+/**
+ * Upon successful fileCompare()
+ * Proceed with generating and displaying DIFF files
+ * @REQUEST     - GET
+ * @URL         - /comparefileload
+ * @return      - File compare HTML data
+ * @OnSuccess   - Load visual response
+ */
+function fileCompareLoad(){
+    $.ajax({
+        url: '/comparefileload',
+        type: 'POST',
+        success: function(response) {
+            //
             // Display output
-            $("#fileCompare").load("../static/tmp/output.html");
+            $("#fileCompareParent").append(response.data);
+            //
+            // Next step / action
+            recompile_apk()
+        },
+        error: function() {
+        }
+    });
+}
+
+/**
+ * Upon successful recompile_apk()
+ * Proceed with signing the generated APK
+ * @REQUEST     - GET
+ * @URL         - /recompileapk
+ * @return      - HTTP 200
+ * @OnSuccess   - signapk()
+ */
+function recompile_apk(){
+    $.ajax({
+        url: '/recompileapk',
+        type: 'GET',
+        success: function(response) {
+            // Next step / action
+            // signapk()
         },
         error: function() {
         }

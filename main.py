@@ -1,8 +1,8 @@
 from flask import Flask, render_template, request, Response, jsonify, session
 from werkzeug.utils import secure_filename
-import secrets, difflib, shutil, os, glob, subprocess
+import secrets, shutil, os, glob, subprocess
 
-from modules import apk, smali, obfuscator
+from modules import apk, smali, obfuscator, compare
 
 IP = "127.0.0.1"
 PORT = "8080"
@@ -16,78 +16,95 @@ WORKING_FOLDER = "dumpster"
 TMP_ASSET_FOLDER = os.path.join("static", "tmp")
 APKTOOL_LOCATION = os.path.join("jars", "apktool_2.6.1.jar")
 
+BASE_SMALI_LOC_FILE = "BASE_smali.txt"
+WORKING_SMALI_LOC_FILE = "smali.txt"
+
+
 @app.route("/")
 def start():
-	return render_template("index.html")
+    return render_template("index.html")
+
 
 @app.route("/cleanup", methods=['GET', 'POST'])
 def cleanup():
-	# Cleanup and recreate dumpster/work folder
-	shutil.rmtree(WORKING_FOLDER)
-	os.makedirs(WORKING_FOLDER)
-	wf = os.path.join(WORKING_FOLDER, ".ignore")
-	open(wf, 'a').close()
+    # Cleanup and recreate dumpster/work folder
+    shutil.rmtree(WORKING_FOLDER)
+    os.makedirs(WORKING_FOLDER)
+    wf = os.path.join(WORKING_FOLDER, ".ignore")
+    open(wf, 'a').close()
 
+    # Cleanup and recreate difflib HTML folder
+    shutil.rmtree(TMP_ASSET_FOLDER)
+    os.makedirs(TMP_ASSET_FOLDER)
+    tf = os.path.join(TMP_ASSET_FOLDER, ".ignore")
+    open(tf, 'a').close()
 
-	# Cleanup and recreate difflib HTML folder
-	shutil.rmtree(TMP_ASSET_FOLDER)
-	os.makedirs(TMP_ASSET_FOLDER)
-	tf = os.path.join(TMP_ASSET_FOLDER, ".ignore")
-	open(tf, 'a').close()
+    return jsonify({'Status': 'Cleanup OK!'}), 200
 
-	return jsonify({'Status': 'Cleanup OK!'}), 200
 
 @app.route("/upload", methods=['GET', 'POST'])
 def uploadFile():
-	if request.method == "POST":
-		file = request.files["file"]
-		session["FILENAME"] = secure_filename(file.filename)
-		p = os.path.join(WORKING_FOLDER, session["FILENAME"])
-		file.save(p)
+    if request.method == "POST":
+        file = request.files["file"]
+        session["FILENAME"] = secure_filename(file.filename)
+        p = os.path.join(WORKING_FOLDER, session["FILENAME"])
+        file.save(p)
 
-	return jsonify({'Status': 'File upload OK!'}), 200
+    return jsonify({'Status': 'File upload OK!'}), 200
+
 
 @app.route("/extractapk", methods=['GET', 'POST'])
 def extractapk():
-	result = apk.extract(APKTOOL_LOCATION,
-						WORKING_FOLDER,
-						session["FILENAME"])
+    result = apk.extract(APKTOOL_LOCATION,
+                         WORKING_FOLDER,
+                         session["FILENAME"])
 
-	return result
+    return result
+
 
 @app.route("/locatesmali", methods=['GET', 'POST'])
 def locatesmali():
-	count = smali.locate(WORKING_FOLDER,
-						session["FILENAME"])
+    count = smali.locate(WORKING_FOLDER,
+                         TMP_ASSET_FOLDER,
+                         session["FILENAME"],
+                         BASE_SMALI_LOC_FILE,
+                         WORKING_SMALI_LOC_FILE)
 
-	return count
+    return count
+
 
 @app.route("/obfuscate", methods=['GET', 'POST'])
 def obfuscate():
-	obfuscator.run()
+    obfuscator.run(TMP_ASSET_FOLDER,
+                   WORKING_FOLDER,
+                   session["FILENAME"])
 
-	return jsonify({'Status': 'Obfuscation OK!'}), 200
+    return jsonify({'Status': 'Obfuscation OK!'}), 200
+
 
 @app.route("/comparefile", methods=['GET', 'POST'])
 def compareFile():
-	workingCopyDir = os.path.join(WORKING_FOLDER, session["FILENAME"].replace('.apk', ''))
-	baselineCopyDir = os.path.join(WORKING_FOLDER, "BASE_" + session["FILENAME"].replace('.apk', ''))
+    count = compare.generate(TMP_ASSET_FOLDER,
+                             BASE_SMALI_LOC_FILE,
+                             WORKING_SMALI_LOC_FILE)
 
-	#
-	# SAMPLE TO TEST IF COMPARE WORKS
-	#
-	wp = os.path.join(workingCopyDir, "smali", "com", "securitycompass", "androidlabs", "base", "AccountsActivity.smali")
-	bp = os.path.join(baselineCopyDir, "smali", "com", "securitycompass", "androidlabs", "base", "AccountsActivity.smali")
-	working = open(wp, "r")
-	baseline = open(bp, "r")
-	compare = difflib.HtmlDiff(wrapcolumn=62)
-	html = compare.make_file(baseline, working)
+    session["COUNT"] = count
+    return jsonify({'Status': "File comparisons OK!"}), 200
 
-	hp = os.path.join(TMP_ASSET_FOLDER, "output.html")
-	with open(hp, 'w') as fh:
-		fh.write(html)
 
-	return jsonify({'Status': 'File compare OK!'}), 200
+@app.route("/comparefileload", methods=['GET', 'POST'])
+def compareFileLoad():
+    return jsonify({'data': render_template("file_compare.html", count=session["COUNT"])}), 200
+
+
+@app.route("/recompileapk", methods=['GET', 'POST'])
+def recompile_apk():
+    result = apk.recompile(APKTOOL_LOCATION,
+                         WORKING_FOLDER,
+                         session["FILENAME"])
+
+    return result
+
 
 if __name__ == "__main__":
-	app.run(host=IP, port=PORT, debug=DEBUG)
+    app.run(host=IP, port=PORT, debug=DEBUG)
