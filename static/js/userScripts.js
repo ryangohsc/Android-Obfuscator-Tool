@@ -163,11 +163,11 @@ function fileCompare(){
 }
 
 /**
- * Upon successful fileCompaore()
+ * Upon successful fileCompare()
  * Proceed with generating and displaying DIFF files
  * @REQUEST     - GET
  * @URL         - /comparefileload
- * @return      - File compaore HTML data
+ * @return      - File compare HTML data
  * @OnSuccess   - Load visual response
  */
 function fileCompareLoad(){
@@ -178,6 +178,30 @@ function fileCompareLoad(){
             //
             // Display output
             $("#fileCompareParent").append(response.data);
+            //
+            // Next step / action
+            recompile_apk()
+        },
+        error: function() {
+        }
+    });
+}
+
+/**
+ * Upon successful recompile_apk()
+ * Proceed with signing the generated APK
+ * @REQUEST     - GET
+ * @URL         - /recompileapk
+ * @return      - HTTP 200
+ * @OnSuccess   - signapk()
+ */
+function recompile_apk(){
+    $.ajax({
+        url: '/recompileapk',
+        type: 'GET',
+        success: function(response) {
+            // Next step / action
+            // signapk()
         },
         error: function() {
         }
