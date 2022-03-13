@@ -13,8 +13,6 @@ def extract(APKTOOL_LOCATION, WORKING_FOLDER, APK_NAME):
     result = subprocess.check_output(COMMAND, shell=True)
 
     # Create base line copy for comparison
-    # workingCopyDir = EXTRACT_LOCATION
-    # baselineCopyDir = os.path.join(WORKING_FOLDER, "BASE_" + APK_NAME.replace('.apk', ''))
     distutils.dir_util._path_created = {}
     dir_util.copy_tree(WORKING_COPY_DIR, BASELINE_COPY_DIR)
 
