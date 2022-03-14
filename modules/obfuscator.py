@@ -6,14 +6,17 @@ from .defunct_class_insertion import DefunctClassInsertion
 from .arithmetic_branching import ArithmeticBranching
 
 
-def run():
+def run(TMP_ASSET_FOLDER, WORKING_FOLDER, APK_NAME):
+    WORKING_SMALI_LOC_FILE = "smali.txt"
+    WORKING_COPY_DIR = os.path.join(WORKING_FOLDER, APK_NAME.replace('.apk', ''))
+
     #
     # Does not require smali file, but should run first so other modules can obfuscate it
     dci = DefunctClassInsertion()
-    dci.run()
+    dci.run(WORKING_COPY_DIR)
     #
     # Load locations of all smali files
-    p = os.path.join("static", "tmp", "smali.txt")
+    p = os.path.join(TMP_ASSET_FOLDER, WORKING_SMALI_LOC_FILE)
     f = open(p, "r")
     smali_locations = f.readlines()
     f.close()
