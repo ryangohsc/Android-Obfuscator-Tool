@@ -17,8 +17,7 @@ function cleanup(){
         type: 'GET',
         success: function(response) {
         },
-        error: function() {
-        }
+        error: function() {}
     });
 }
 
@@ -45,6 +44,7 @@ function upload(){
             //
             // Visual updates
             // $("#uploadStatus").load("../static/html/alert_OK.html");
+            document.getElementById("fileInput").setAttribute("disabled", "")
             document.getElementById("obfuscateButton").setAttribute("disabled", "")
             document.getElementById("apkExtractSpinnerHeader").removeAttribute("hidden");
             document.getElementById("apkExtractSpinner").removeAttribute("hidden");
@@ -83,8 +83,7 @@ function apkExtract(){
             // Next step / action
             locateSmali()
         },
-        error: function() {
-        }
+        error: function() {}
     });
 }
 
@@ -104,17 +103,18 @@ function locateSmali(){
         success: function(response) {
             //
             // Visual updates
-            document.getElementById("smaliFilesFoundWrapper").removeAttribute("hidden");
-            document.getElementById("smaliFilesFoundHeader").removeAttribute("hidden");
+            document.getElementById("smaliFilesFoundBeforeWrapper").removeAttribute("hidden");
+            document.getElementById("smaliFilesFoundBeforeHeader").removeAttribute("hidden");
+            document.getElementById("fileCompareSpinnerHeader").removeAttribute("hidden");
+            document.getElementById("fileCompareSpinner").removeAttribute("hidden");
             // Display output
-            $("#smaliFilesFoundCount").html(response)
-            $("#smaliFilesFoundList").load("../static/tmp/smali.txt");
+            $("#smaliFilesFoundBeforeCount").html(response)
+            $("#smaliFilesFoundBeforeList").load("../static/tmp/smali.txt");
             //
             // Next step / action
             obfuscate()
         },
-        error: function() {
-        }
+        error: function() {}
     });
 }
 
@@ -135,18 +135,18 @@ function obfuscate(){
             // Next step / action
             fileCompare()
         },
-        error: function() {
-        }
+        error: function() {}
     });
 }
 
 /**
  * Upon successful obfuscate()
- * Proceed with running comparing files in the background
+ * Proceed with running comparing files in the background to generate HTML files
  * @REQUEST     - GET
  * @URL         - /comparefile
  * @return      - HTTP 200
- * @OnSuccess   - Trigger fileCompareLoad()
+ * @OnSuccess   - Load #fileSelectList with options
+ *              - Trigger recompile_apk()
  */
 function fileCompare(){
     $.ajax({
@@ -154,38 +154,34 @@ function fileCompare(){
         type: 'POST',
         success: function(response) {
             //
-            // Next step / action
-            fileCompareLoad()
-        },
-        error: function() {
-        }
-    });
-}
-
-/**
- * Upon successful fileCompare()
- * Proceed with generating and displaying DIFF files
- * @REQUEST     - GET
- * @URL         - /comparefileload
- * @return      - File compare HTML data
- * @OnSuccess   - Load visual response
- */
-function fileCompareLoad(){
-    $.ajax({
-        url: '/comparefileload',
-        type: 'POST',
-        success: function(response) {
-            //
-            // Display output
-            $("#fileCompareParent").append(response.data);
+            // Visual updates
+            for(key in response){
+                if (key != 0){
+                    var opt = document.createElement("option")
+                    opt.value = key
+                    opt.innerHTML = response[key]
+                    document.getElementById("fileSelectList").appendChild(opt)
+                }
+            }
+            document.getElementById("fileCompareSpinnerWrapper").remove();
+            document.getElementById("fileSelectWrapper").removeAttribute("hidden");
+            document.getElementById("fileSelectHeader").removeAttribute("hidden");
             //
             // Next step / action
             recompile_apk()
         },
-        error: function() {
-        }
+        error: function() {}
     });
 }
+
+/**
+ * Handle #fileSelectList option change
+ * @PARAM       - Selected value (Array index)
+ * @return      - File compare HTML data
+ */
+ function fileSelect(sel){
+    $("#fileCompare").load("../static/tmp/" + sel.value + ".html");
+};
 
 /**
  * Upon successful recompile_apk()
@@ -203,7 +199,6 @@ function recompile_apk(){
             // Next step / action
             // signapk()
         },
-        error: function() {
-        }
+        error: function() {}
     });
 }
