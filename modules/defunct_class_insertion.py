@@ -49,7 +49,7 @@ class DefunctClassInsertion:
         Opens a file and reads it
         :return: f.read()
         """
-        directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "modules", "defunct_class.txt")
+        directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "modules", "resources", "defunct_class.txt")
         with open(directory, "r") as f:
             return f.read()
 
