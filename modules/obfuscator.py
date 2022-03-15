@@ -4,6 +4,9 @@ from .reordering import Reorder
 from .defunct_method_insertion import DefunctMethodInsertion
 from .defunct_class_insertion import DefunctClassInsertion
 from .arithmetic_branching import ArithmeticBranching
+from .nop import Nop
+from .method_rename import MethodRename
+from .variable_rename import VariableRename
 
 
 def run(TMP_ASSET_FOLDER, WORKING_FOLDER, APK_NAME):
@@ -31,6 +34,9 @@ def run(TMP_ASSET_FOLDER, WORKING_FOLDER, APK_NAME):
     ro = Reorder()
     dmi = DefunctMethodInsertion()
     ab = ArithmeticBranching()
+    nop = Nop()
+    method_rename = MethodRename()
+    variable_rename = VariableRename()
 
     for index, line in enumerate(smali_locations):
         file = line.strip()
@@ -38,4 +44,7 @@ def run(TMP_ASSET_FOLDER, WORKING_FOLDER, APK_NAME):
         dmi.run(file)  # should run second so other modules can obfuscate it
         uj.run(file)
         ab.run(file)
+        nop.run(file)
+        method_rename.run(file)
+        variable_rename.run(file)
         ro.run(file)  # should run last
