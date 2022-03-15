@@ -40,13 +40,25 @@
                     <pre><code id="apkExtractStatus"></code></pre>
                 </div>
             </div>
-            <div id="smaliFilesFoundWrapper" class="row bg-light border rounded-3 mt-3 mb-3" hidden>
-                <h4 id="smaliFilesFoundHeader" class="pt-3 pb-1" hidden><span id="smaliFilesFoundCount" class="mark font-monospace">NULL</span> <code>.smali</code> files found</h4>
+            <div id="smaliFilesFoundBeforeWrapper" class="row bg-light border rounded-3 mt-3 mb-3" hidden>
+                <h4 id="smaliFilesFoundBeforeHeader" class="pt-3 pb-1" hidden>Original <span id="smaliFilesFoundBeforeCount" class="mark font-monospace">NULL</span> <code>.smali</code> files found</h4>
                 <div class="bg-white border rounded-3 mb-3 font-monospace fs-6 mb-3" style="max-height: 20vh; overflow-y: scroll;">
-                    <pre><code id="smaliFilesFoundList"></code></pre>
+                    <pre><code id="smaliFilesFoundBeforeList"></code></pre>
                 </div>
             </div>
-            <div id="fileCompareParent"></div>
+            <div id="fileCompareSpinnerWrapper" class="alert alert-light d-flex align-items-center">
+                <span id="fileCompareSpinnerHeader" hidden>Files are being obfuscated ...</span>
+                <span id="fileCompareSpinner" class="spinner-grow text-primary ms-auto" role="status" hidden></span>
+            </div>
+            <div id="fileSelectWrapper" class="row bg-light border border-success rounded-3 mt-3 mb-3" hidden>
+                <h4 id="fileSelectHeader" class="pt-3 pb-1" hidden>File Comparison</h4>
+                <div class="mt-3 mb-3">
+                    <select id="fileSelectList" class="form-select mb-3" onchange="fileSelect(this)">
+                        <option selected>No file selected</option>
+                    </select>
+                    <div id="fileCompare"></div>
+                </div>
+            </div>
         </div>
     </BODY>
 

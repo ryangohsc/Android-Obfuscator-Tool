@@ -87,14 +87,13 @@ def compareFile():
     count = compare.generate(TMP_ASSET_FOLDER,
                              BASE_SMALI_LOC_FILE,
                              WORKING_SMALI_LOC_FILE)
-
     session["COUNT"] = count
-    return jsonify({'Status': "File comparisons OK!"}), 200
 
-
-@app.route("/comparefileload", methods=['GET', 'POST'])
-def compareFileLoad():
-    return jsonify({'data': render_template("file_compare.html", count=session["COUNT"])}), 200
+    selectListData = compare.loadHTMLSelect(TMP_ASSET_FOLDER,
+                                            WORKING_FOLDER,
+                                            WORKING_SMALI_LOC_FILE,
+                                            session["FILENAME"])
+    return jsonify(selectListData)
 
 
 @app.route("/recompileapk", methods=['GET', 'POST'])
