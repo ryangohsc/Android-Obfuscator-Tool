@@ -47,3 +47,13 @@ def createHTML(TMP_ASSET_FOLDER, BASE_FILE, MODIFIED_FILE, COUNT, WRAP):
 
     base_file.close()
     modified_file.close()
+
+def loadHTMLSelect(TMP_ASSET_FOLDER, WORKING_FOLDER, WORKING_SMALI_LOC_FILE, APK_NAME):
+    file = os.path.join(TMP_ASSET_FOLDER, WORKING_SMALI_LOC_FILE)
+    f = open(file, 'r')
+    truncatePath = os.path.join(WORKING_FOLDER, APK_NAME.replace(".apk", ""))
+    selectListData = {0: "NULL"}
+    for index, path in enumerate(f):
+        selectListData[index+1] = path.strip().replace(truncatePath, "")
+    f.close()
+    return selectListData
