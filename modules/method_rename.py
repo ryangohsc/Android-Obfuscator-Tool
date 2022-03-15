@@ -1,8 +1,9 @@
 import re
+import os 
 from hashlib import md5
-from utils import * 
+from .utils import * 
 
-
+# Global variables 
 ignore_package_names = []
 
 class_pattern = re.compile(r"\.class.+?(?P<class_name>\S+?;)", re.UNICODE)
@@ -13,7 +14,6 @@ method_pattern = re.compile(
 	r"(?P<method_return>\S+)",
 	re.UNICODE,
 )
-
 
 invoke_pattern = re.compile(
     r"\s+(?P<invoke_type>invoke-\S+)\s"
@@ -26,15 +26,16 @@ invoke_pattern = re.compile(
 )
 
 
-
-
 class MethodRename:
-	def __init__(self, smali_file_list):
-		self.smali_file_list = smali_file_list 
-	
-	
 	def get_android_classes(self):
-		f = open(r"C:\Users\tux\Documents\GitHub\ICT-2207-A2\modules\android_classes.txt", "r")  
+		""""
+		Get the list of Android classes from the /resources folder. 
+		:param:
+		:return android_classes: 
+		"""
+		cwd = os.getcwd()
+		android_classes_path = os.path.join(cwd, "modules", "resources", "android_classes.txt")
+		f = open(android_classes_path, "r")  
 		android_classes = []
 		for line in f:
 			android_classes.append(line.strip("\n"))
@@ -42,78 +43,84 @@ class MethodRename:
 
 
 	def rename_method(self, method_name):
+		""""
+		Renames the method to a randomly generated MD5 name. 
+		:param:
+		:return "m{0}".format(md5_string.lower()[:8]): 
+		"""		
 		md5_string = md5(method_name.encode()).hexdigest()
-		return "m{0}".format(md5_string.lower()[:8])
-
+		return "m%s" % md5_string.lower()[:8]
 
 	def rename_method_declarations(self, class_names_to_ignore, smali_file):
+		""""
+		
+		:param class_names_to_ignore:
+		:param smali_file:
+		:return renamed_methods: 
+		"""
+		# Create a set of the methods to be renamed. 
 		renamed_methods = set()
 
+		# Open the smali file as two file objects, in_file and out_file. 
 		with inplace_edit_file(smali_file) as (in_file, out_file):
 			skip_remaining_lines = False
 			class_name = None
-			for line in in_file:
 
+			# Parse each line in the smali in_file object. 
+			for line in in_file:
+				# Skip the file if it fails any of the checks as stated below. 
 				if skip_remaining_lines:
 					out_file.write(line)
 					continue
 
+				# Skip the file if it contains an "emum" class.
 				if not class_name:
 					class_match = class_pattern.match(line)
+
 					# If this is an enum class, don't rename anything.
 					if " enum " in line:
 						skip_remaining_lines = True
 						out_file.write(line)
 						continue
+
+					# If the file does not contain an "enum" class.
 					elif class_match:
 						class_name = class_match.group("class_name")
+
+						# Check that the name of the class is not in the list of classes to ignore. 
 						if (class_name in class_names_to_ignore):
-							# The methods of this class should be ignored when
-							# renaming, so proceed with the next class.
 							skip_remaining_lines = True
 						out_file.write(line)
 						continue
 
-				# Skip virtual methods, consider only the direct methods defined
-				# earlier in the file.
+				# Skip the smali file if it is a virtual method. 
 				if line.startswith("# virtual methods"):
 					skip_remaining_lines = True
 					out_file.write(line)
 					continue
 			
-
-				# Method declared in class.
+				# Check that the method is not a constructor, native or abstract method.
 				method_match = method_pattern.match(line)
 
 				# Avoid constructors, native and abstract methods.
-				if (
-					method_match
-					and "<init>" not in line
-					and "<clinit>" not in line
-					and " native " not in line
-					and " abstract " not in line
-				):
-					method = "{method_name}({method_param}){method_return}".format(
-						method_name=method_match.group("method_name"),
-						method_param=method_match.group("method_param"),
-						method_return=method_match.group("method_return"),
-					)
-					# Rename method declaration (invocations of this method will be
-					# renamed later).
+				not_init = "<init>" not in line
+				not_clinit = "<clinit>" not in line
+				not_native = " native " not in line
+				not_abstract =  " abstract " not in line
+				if (method_match and not_init and not_clinit and not_native and not_abstract):
 					method_name = method_match.group("method_name")
-					out_file.write(
-						line.replace(
-							"{0}(".format(method_name),
-							"{0}(".format(self.rename_method(method_name)),
-						)
-					)
-					# Direct methods cannot be overridden, so they can be called
-					# only by the same class that declares them.
-					renamed_methods.add(
-						"{class_name}->{method}".format(
-							class_name=class_name, method=method
-						)
-					)
+					method_param = method_match.group("method_param")
+					method_return = method_match.group("method_return")
+					method = "%s(%s)%s" % (method_name, method_param, method_return)
+					
+					# Rename the method declaration.
+					method_name = method_match.group("method_name")
+					out_file.write(line.replace("%s(" % method_name, "%s(" % self.rename_method(method_name)))
+					
+					# Direct methods cannot be overridden, so they can be called only by the same class that declares them.
+					renamed_methods.add("%s->%s" %(class_name, method))
+
+				# Skip renaming the method if the method is a constructor, native or abstract method.
 				else:
 					out_file.write(line)
 
@@ -122,70 +129,48 @@ class MethodRename:
 
 
 	def rename_method_invocations(self, methods_to_rename, smali_file):
-
-
 		with inplace_edit_file(smali_file) as (in_file, out_file):
 			for line in in_file:
-				# Method invocation.
+				# Find the method invocation to rename in the smali file.
 				invoke_match = invoke_pattern.match(line)
 				if invoke_match:
-					method = (
-						"{class_name}->"
-						"{method_name}({method_param}){method_return}".format(
-							class_name=invoke_match.group("invoke_object"),
-							method_name=invoke_match.group("invoke_method"),
-							method_param=invoke_match.group("invoke_param"),
-							method_return=invoke_match.group("invoke_return"),
-						)
-					)
+					class_name = invoke_match.group("invoke_object")
+					method_name=invoke_match.group("invoke_method")
+					method_param=invoke_match.group("invoke_param")
+					method_return=invoke_match.group("invoke_return")
+					method = "%s->%s(%s)%s" % (class_name, method_name, method_param, method_return)
 					invoke_type = invoke_match.group("invoke_type")
-					# Rename the method invocation only if is direct or static (we
-					# are renaming only direct methods). The list of methods to
-					# rename already contains the class name of each method, since
-					# here we have a list of methods whose declarations were already
-					# renamed.
-					if (
-						"direct" in invoke_type or "static" in invoke_type
-					) and method in methods_to_rename:
+					
+					# Rename the method invocation only if is direct or static.
+					is_direct = "direct" in invoke_type
+					is_static = "static" in invoke_type
+
+					if (is_direct or is_static) and method in methods_to_rename:
 						method_name = invoke_match.group("invoke_method")
-						out_file.write(
-							line.replace(
-								"->{0}(".format(method_name),
-								"->{0}(".format(self.rename_method(method_name)),
-							)
-						)
+						out_file.write(line.replace("->%s(" % method_name, "->%s(" % self.rename_method(method_name)))
 					else:
 						out_file.write(line)
 				else:
 					out_file.write(line)		
 	
 
-	def run(self):
-		if self.smali_file_list is None:
-			return False 
-		
-		else:
-			android_classes = self.get_android_classes()
+	def run(self, arg_filename):
+		""""
+		Runs the MethodRename functions. 
+		:param:
+		:return True: 
+		:return False: 
+		"""		
+		# Get the list of all the valid android classes. 
+		android_classes = self.get_android_classes()
 
-			# Make a copy of all the smali_files
-			# create_backup_smali_files(self.smali_file_path, self.smali_file_list)
-
-			# Operate on each smali file 
-			for smali_file in self.smali_file_list:
-				renamed_methods = self.rename_method_declarations(android_classes, smali_file) 
-				self.rename_method_invocations(renamed_methods, smali_file)
-
-			# Remove backup files 
-			# remove_backup_smali_files(self.smali_file_path, self.smali_file_list)
-
-			return True
-
-
-
+		# Operate on each smali file. 
+		renamed_methods = self.rename_method_declarations(android_classes, arg_filename) 
+		self.rename_method_invocations(renamed_methods, arg_filename)
 
 
 if __name__ == "__main__":
 	smali_files_list = get_smali_files_list("A2_SAMPLE_ALT")
-	method_rename = MethodRename(smali_files_list)
-	method_rename.run()
-	
+	for item in smali_files_list:
+		method_rename = MethodRename()
+		method_rename.run(item)
