@@ -4,6 +4,10 @@ from distutils import dir_util
 
 
 def extract(APKTOOL_LOCATION, WORKING_FOLDER, APK_NAME):
+    """
+    Extracts APK uploaded by user
+    :return: java process output(console)
+    """
     FILE_LOCATION = os.path.join(WORKING_FOLDER, APK_NAME)
     WORKING_COPY_DIR = os.path.join(WORKING_FOLDER, APK_NAME.replace('.apk', ''))
     BASELINE_COPY_DIR = os.path.join(WORKING_FOLDER, "BASE_" + APK_NAME.replace('.apk', ''))
@@ -20,6 +24,10 @@ def extract(APKTOOL_LOCATION, WORKING_FOLDER, APK_NAME):
 
 
 def recompile(APKTOOL_LOCATION, WORKING_FOLDER, APK_NAME):
+    """
+    Recompiles APK after obfuscation/modification
+    :return: java process output(console)
+    """
     WORKING_COPY_DIR = os.path.join(WORKING_FOLDER, APK_NAME.replace('.apk', ''))
     if os.path.exists(os.path.join(WORKING_FOLDER, "dist")):
         os.makedirs(os.path.join(WORKING_FOLDER, "dist"))
