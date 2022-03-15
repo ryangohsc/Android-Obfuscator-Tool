@@ -1,6 +1,10 @@
 import os
 
 def locate(APK_LOCATION, TMP_ASSET_FOLDER, APK_NAME, BASE_SMALI_LOC_FILE, WORKING_SMALI_LOC_FILE):
+    """
+    Traverse working directory to locate smali files
+    :return: number of smali files
+    """
     BASE_APK_FOLDER = os.path.join(APK_LOCATION, "BASE_" + APK_NAME.replace('.apk', ''))
     EXT = ".smali"
 

@@ -7,6 +7,10 @@ from .arithmetic_branching import ArithmeticBranching
 
 
 def run(TMP_ASSET_FOLDER, WORKING_FOLDER, APK_NAME):
+    """
+    Trigger point for obfuscation functions
+    :return: NIL
+    """
     WORKING_SMALI_LOC_FILE = "smali.txt"
     WORKING_COPY_DIR = os.path.join(WORKING_FOLDER, APK_NAME.replace('.apk', ''))
 
@@ -30,7 +34,7 @@ def run(TMP_ASSET_FOLDER, WORKING_FOLDER, APK_NAME):
 
     for index, line in enumerate(smali_locations):
         file = line.strip()
-        print(file)
+        # print(file)
         dmi.run(file)  # should run second so other modules can obfuscate it
         uj.run(file)
         ab.run(file)
