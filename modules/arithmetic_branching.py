@@ -25,16 +25,24 @@ class ArithmeticBranching:
         return ''.join(random.SystemRandom().choice(string.ascii_letters) for _ in range(16))
 
     def run(self, arg_filename):
+        """
+        Run the arithmetic branching module
+        :param arg_filename:
+        :return: None.
+        """
         try:
             with inplace_edit_file(arg_filename) as (input_file, output_file):
                 edit_method = False
                 start_label = None
                 end_label = None
                 for line in input_file:
-                    if line.startswith(".method ") and " abstract " not in line and " native " not in line and not edit_method:
+                    if line.startswith(
+                            ".method ") and " abstract " not in line and " native " not in line and not edit_method:
+                        # in a method
                         output_file.write(line)
                         edit_method = True
                     elif line.startswith(".end method") and edit_method:
+                        # end of method
                         if start_label and end_label:
                             output_file.write("\t:%s\n" % end_label)
                             output_file.write("\tgoto/32 :%s\n" % start_label)
@@ -46,6 +54,7 @@ class ArithmeticBranching:
                         output_file.write(line)
                         match = self.locals_pattern.match(line)
                         if match and int(match.group("local_count")) >= 2:
+                            # if local count is 2, means 2 registers is available, then can do arithmetic branching
                             first_num = self.random_number()
                             second_num = self.random_number()
                             start_label = self.random_string()

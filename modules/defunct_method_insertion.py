@@ -8,11 +8,17 @@ class DefunctMethodInsertion:
         Opens a file and reads it
         :return: f.read()
         """
-        directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "modules", "resources", "defunct_method.txt")
+        directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "modules", "resources",
+                                 "defunct_method.txt")
         with open(directory, "r") as f:
             return f.read()
 
     def run(self, arg_filename):
+        """
+        Runs the defunct method insertion module
+        :param arg_filename:
+        :return: None.
+        """
         try:
             with inplace_edit_file(arg_filename) as (input_file, output_file):
                 for line in input_file:
