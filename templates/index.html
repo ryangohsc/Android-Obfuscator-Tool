@@ -8,6 +8,7 @@
         <script src="../static/js/bootstrap.bundle.min.js"></script>
         <script src="../static/js/jquery-3.6.0.min.js"></script>
         <script src="../static/js/userScripts.js"></script>
+        <style>#mainWrapper {min-width: 1400px; width: auto !important; width: 1400px;}</style>
     </HEAD>
 
     <BODY>
@@ -19,14 +20,51 @@
 
         <div id="mainWrapper" class="container">
             <div id="inputRow" class="row bg-light border rounded-3 mt-3 mb-3">
-                <form class="mt-3 mb-3"
-                    action="/upload"
-                    method="POST"
-                    enctype="multipart/form-data">
-                    <label for="fileInput" class="form-label"><h4>Input File</h4></label>
-                    <input id="fileInput" class="form-control" type="file" name="file" accept=".apk, .smali"/>
+                <form name="form" class="mt-3 mb-3" action="javascript:upload()">
+                    <label id="obfusForm" for="fileInput" class="form-label"><h4>Input File</h4></label>
+                    <input id="fileInput" class="form-control" type="file" name="file" accept=".apk, .smali" autocomplete="off" required/>
                     <div id="fileInputComment" class="form-text">Files can be either <code>.APK</code> or <code>.SMALI</code></div>
-                    <button id="obfuscateButton" type="button" onclick="upload()" class="btn btn-primary w-100 mt-3">Obfuscate</button>
+                    <hr>
+                    <label for="obfusFunctions" class="form-label"><h4>Obfuscation Functions</h4></label>
+                    <fieldset id="obfusFunctionsCheckboxs" class="form-group row">
+                        <div class="col">
+                            <div class="form-check">
+                                <input id="obfusFunc_dci" class="form-check-input" type="checkbox" value="dci" autocomplete="off" checked disabled>
+                                <label class="form-check-label" for="obfusFunc_dci">Defunct Class Insertion</label>
+                            </div>
+                            <div class="form-check">
+                                <input id="obfusFunc_dmi" class="form-check-input" type="checkbox" value="dmi" autocomplete="off" checked>
+                                <label class="form-check-label" for="obfusFunc_dmi">Defunct Method Insertion</label>
+                            </div>
+                            <div class="form-check">
+                                <input id="obfusFunc_uj" class="form-check-input" type="checkbox" value="uj" autocomplete="off" checked>
+                                <label class="form-check-label" for="obfusFunc_uj">Unconditional Jump</label>
+                            </div>
+                            <div class="form-check">
+                                <input id="obfusFunc_ab" class="form-check-input" type="checkbox" value="ab" autocomplete="off" checked>
+                                <label class="form-check-label" for="obfusFunc_ab">Arithmetic Branching</label>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-check">
+                                <input id="obfusFunc_nop" class="form-check-input" type="checkbox" value="nop" checked>
+                                <label class="form-check-label" for="obfusFunc_nop">NOP (No Operation)</label>
+                            </div>
+                            <div class="form-check">
+                                <input id="obfusFunc_method_rename" class="form-check-input" type="checkbox" value="method_rename" autocomplete="off" checked>
+                                <label class="form-check-label" for="obfusFunc_method_rename">Method Rename</label>
+                            </div>
+                            <div class="form-check">
+                                <input id="obfusFunc_variable_rename" class="form-check-input" type="checkbox" value="variable_rename" autocomplete="off" checked>
+                                <label class="form-check-label" for="obfusFunc_variable_rename">Variable Rename</label>
+                            </div>
+                            <div class="form-check">
+                                <input id="obfusFunc_ro" class="form-check-input" type="checkbox" value="ro" autocomplete="off" checked>
+                                <label class="form-check-label" for="obfusFunc_ro">Code Reorder</label>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <button id="obfuscateButton" type="submit" class="btn btn-primary w-100 mt-3">Obfuscate</button>
                 </form>
             </div>
             <div id="uploadStatus"></div>
@@ -34,12 +72,12 @@
                 <span id="apkExtractSpinnerHeader" hidden>File is being extracted ...</span>
                 <span id="apkExtractSpinner" class="spinner-grow text-primary ms-auto" role="status" hidden></span>
             </div>
-            <div id="apkExtractWrapper" class="row bg-light border rounded-3 mt-3 mb-3" hidden>
+            <!-- <div id="apkExtractWrapper" class="row bg-light border rounded-3 mt-3 mb-3" hidden>
                 <h4 id="apkExtractHeader" class="pt-3 pb-1" hidden>APK Extraction Log</h4>
                 <div class="bg-white border rounded-3 mb-3 font-monospace fs-6 mb-3" style="max-height: 20vh; overflow-y: scroll;">
                     <pre><code id="apkExtractStatus"></code></pre>
                 </div>
-            </div>
+            </div> -->
             <div id="smaliFilesFoundBeforeWrapper" class="row bg-light border rounded-3 mt-3 mb-3" hidden>
                 <h4 id="smaliFilesFoundBeforeHeader" class="pt-3 pb-1" hidden>Original <span id="smaliFilesFoundBeforeCount" class="mark font-monospace">NULL</span> <code>.smali</code> files found</h4>
                 <div class="bg-white border rounded-3 mb-3 font-monospace fs-6 mb-3" style="max-height: 20vh; overflow-y: scroll;">

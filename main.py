@@ -19,6 +19,16 @@ APKTOOL_LOCATION = os.path.join("jars", "apktool_2.6.1.jar")
 BASE_SMALI_LOC_FILE = "BASE_smali.txt"
 WORKING_SMALI_LOC_FILE = "smali.txt"
 
+OBFUSCATION_METHODS = {
+    "dci": True,
+    "dmi": True,
+    "uj": True,
+    "ab": True,
+    "nop": True,
+    "method_rename": True,
+    "variable_rename": True,
+    "ro": True
+}
 
 @app.route("/")
 def start():
@@ -45,10 +55,16 @@ def cleanup():
 @app.route("/upload", methods=['GET', 'POST'])
 def uploadFile():
     if request.method == "POST":
+        # Store APK
         file = request.files["file"]
         session["FILENAME"] = secure_filename(file.filename)
         p = os.path.join(WORKING_FOLDER, session["FILENAME"])
         file.save(p)
+        # Store choice of obfuscation methods
+        session["OBFUSCATION_METHODS"] = OBFUSCATION_METHODS
+        for index, (key, value) in enumerate((request.form).items()):
+            if (value == "false"):
+                session["OBFUSCATION_METHODS"][key] = False;
 
     return jsonify({'Status': 'File upload OK!'}), 200
 
@@ -77,7 +93,8 @@ def locatesmali():
 def obfuscate():
     obfuscator.run(TMP_ASSET_FOLDER,
                    WORKING_FOLDER,
-                   session["FILENAME"])
+                   session["FILENAME"],
+                   session["OBFUSCATION_METHODS"])
 
     return jsonify({'Status': 'Obfuscation OK!'}), 200
 
