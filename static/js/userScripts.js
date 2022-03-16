@@ -51,7 +51,6 @@ function upload(){
         success: function() {
             //
             // Visual updates
-            // $("#uploadStatus").load("../static/html/alert_OK.html");
             document.getElementById("fileInput").setAttribute("disabled", "")
             document.getElementById("obfuscateButton").setAttribute("disabled", "")
             document.getElementById("obfusFunc_dmi").setAttribute("disabled", "")
@@ -67,9 +66,7 @@ function upload(){
             // Next step / action
             apkExtract()
         },
-        error: function() {
-            // $("#uploadStatus").load("../static/html/alert_fail.html");
-        }
+        error: function() {}
     });
 }
 
@@ -89,11 +86,7 @@ function apkExtract(){
         success: function(response) {
             //
             // Visual updates
-            // document.getElementById("apkExtractWrapper").removeAttribute("hidden");
-            // document.getElementById("apkExtractHeader").removeAttribute("hidden");
             document.getElementById("apkExtractSpinnerWrapper").remove();
-            // Display output
-            // document.getElementById("apkExtractStatus").innerHTML=response;
             //
             // Next step / action
             locateSmali()
@@ -176,11 +169,18 @@ function fileCompare(){
                     opt.value = key
                     opt.innerHTML = response[key]
                     document.getElementById("fileSelectList").appendChild(opt)
+                } else {
+                    $("#newFilesCount").html(response[0])
                 }
             }
             document.getElementById("fileCompareSpinnerWrapper").remove();
             document.getElementById("fileSelectWrapper").removeAttribute("hidden");
             document.getElementById("fileSelectHeader").removeAttribute("hidden");
+            document.getElementById("newFilesWrapper").removeAttribute("hidden");
+            document.getElementById("newAPKDownloadWrapper").removeAttribute("hidden");
+            //
+            // Display output
+            $("#newFilesList").load("../static/tmp/newfiles.txt");
             //
             // Next step / action
             recompile_apk()
