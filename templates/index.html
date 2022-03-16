@@ -30,37 +30,37 @@
                         <div class="col">
                             <div class="form-check">
                                 <input id="obfusFunc_dci" class="form-check-input" type="checkbox" value="dci" autocomplete="off" checked disabled>
-                                <label class="form-check-label" for="obfusFunc_dci">Defunct Class Insertion</label>
+                                <label class="form-check-label" for="obfusFunc_dci"><code>Defunct Class Insertion</code></label>
                             </div>
                             <div class="form-check">
                                 <input id="obfusFunc_dmi" class="form-check-input" type="checkbox" value="dmi" autocomplete="off" checked>
-                                <label class="form-check-label" for="obfusFunc_dmi">Defunct Method Insertion</label>
+                                <label class="form-check-label" for="obfusFunc_dmi"><code>Defunct Method Insertion</code></label>
                             </div>
                             <div class="form-check">
                                 <input id="obfusFunc_uj" class="form-check-input" type="checkbox" value="uj" autocomplete="off" checked>
-                                <label class="form-check-label" for="obfusFunc_uj">Unconditional Jump</label>
+                                <label class="form-check-label" for="obfusFunc_uj"><code>Unconditional Jump</code></label>
                             </div>
                             <div class="form-check">
                                 <input id="obfusFunc_ab" class="form-check-input" type="checkbox" value="ab" autocomplete="off" checked>
-                                <label class="form-check-label" for="obfusFunc_ab">Arithmetic Branching</label>
+                                <label class="form-check-label" for="obfusFunc_ab"><code>Arithmetic Branching</code></label>
                             </div>
                         </div>
                         <div class="col">
                             <div class="form-check">
-                                <input id="obfusFunc_nop" class="form-check-input" type="checkbox" value="nop" checked>
-                                <label class="form-check-label" for="obfusFunc_nop">NOP (No Operation)</label>
+                                <input id="obfusFunc_nop" class="form-check-input" type="checkbox" value="nop" autocomplete="off" checked>
+                                <label class="form-check-label" for="obfusFunc_nop"><code>NOP (No Operation)</code></label>
                             </div>
                             <div class="form-check">
                                 <input id="obfusFunc_method_rename" class="form-check-input" type="checkbox" value="method_rename" autocomplete="off" checked>
-                                <label class="form-check-label" for="obfusFunc_method_rename">Method Rename</label>
+                                <label class="form-check-label" for="obfusFunc_method_rename"><code>Method Rename</code></label>
                             </div>
                             <div class="form-check">
                                 <input id="obfusFunc_variable_rename" class="form-check-input" type="checkbox" value="variable_rename" autocomplete="off" checked>
-                                <label class="form-check-label" for="obfusFunc_variable_rename">Variable Rename</label>
+                                <label class="form-check-label" for="obfusFunc_variable_rename"><code>Variable Rename</code></label>
                             </div>
                             <div class="form-check">
                                 <input id="obfusFunc_ro" class="form-check-input" type="checkbox" value="ro" autocomplete="off" checked>
-                                <label class="form-check-label" for="obfusFunc_ro">Code Reorder</label>
+                                <label class="form-check-label" for="obfusFunc_ro"><code>Code Reorder</code></label>
                             </div>
                         </div>
                     </fieldset>
@@ -72,21 +72,27 @@
                 <span id="apkExtractSpinnerHeader" hidden>File is being extracted ...</span>
                 <span id="apkExtractSpinner" class="spinner-grow text-primary ms-auto" role="status" hidden></span>
             </div>
-            <!-- <div id="apkExtractWrapper" class="row bg-light border rounded-3 mt-3 mb-3" hidden>
-                <h4 id="apkExtractHeader" class="pt-3 pb-1" hidden>APK Extraction Log</h4>
-                <div class="bg-white border rounded-3 mb-3 font-monospace fs-6 mb-3" style="max-height: 20vh; overflow-y: scroll;">
-                    <pre><code id="apkExtractStatus"></code></pre>
-                </div>
-            </div> -->
             <div id="smaliFilesFoundBeforeWrapper" class="row bg-light border rounded-3 mt-3 mb-3" hidden>
-                <h4 id="smaliFilesFoundBeforeHeader" class="pt-3 pb-1" hidden>Original <span id="smaliFilesFoundBeforeCount" class="mark font-monospace">NULL</span> <code>.smali</code> files found</h4>
-                <div class="bg-white border rounded-3 mb-3 font-monospace fs-6 mb-3" style="max-height: 20vh; overflow-y: scroll;">
+                <h4 id="smaliFilesFoundBeforeHeader" class="pt-3 pb-1" hidden>Original <span id="smaliFilesFoundBeforeCount" class="mark font-monospace">NULL</span> <code>.smali</code> files</h4>
+                <div class="border rounded-3 mb-3 font-monospace" style="max-height: 20vh; overflow-y: scroll;">
                     <pre><code id="smaliFilesFoundBeforeList"></code></pre>
                 </div>
             </div>
             <div id="fileCompareSpinnerWrapper" class="alert alert-light d-flex align-items-center">
                 <span id="fileCompareSpinnerHeader" hidden>Files are being obfuscated ...</span>
                 <span id="fileCompareSpinner" class="spinner-grow text-primary ms-auto" role="status" hidden></span>
+            </div>
+            <div id="newStuffWrapper" class="row">
+                <div id="newFilesWrapper" class="col bg-light border border-success rounded-3 me-1" hidden>
+                    <h4 id="newFilesHeader" class="pt-3 pb-1"><span id="newFilesCount" class="mark font-monospace">NULL</span> new <code>.smali</code> file(s) generated</h4>
+                    <p>New files generated from <code>Defunct Class Insertion</code></p>
+                    <div class="border rounded-3 mb-3 font-monospace" style="max-height: 10vh; overflow-y: scroll;">
+                        <pre><code id="newFilesList"></code></pre>
+                    </div>
+                </div>
+                <div id="newAPKDownloadWrapper" class="col bg-light border border-danger border-2 rounded-3 ms-1" hidden>
+                    <h4 id="newAPKDownloadHeader" class="pt-3 pb-1">New APK Download</h4>
+                </div>
             </div>
             <div id="fileSelectWrapper" class="row bg-light border border-success rounded-3 mt-3 mb-3" hidden>
                 <h4 id="fileSelectHeader" class="pt-3 pb-1" hidden>File Comparison</h4>

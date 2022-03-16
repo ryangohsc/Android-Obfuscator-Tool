@@ -41,18 +41,12 @@ def run(TMP_ASSET_FOLDER, WORKING_FOLDER, APK_NAME, OBFUSCATION_METHODS):
     variable_rename = VariableRename()
     ro = Reorder()
 
-    # print(OBFUSCATION_METHODS["dmi"])
-    # for index, (key, value) in enumerate((OBFUSCATION_METHODS).items()):
-    #     if (value == False):
-    #         str(key) + "_run" = False
-    print(OBFUSCATION_METHODS)
     for index, line in enumerate(smali_locations):
         file = line.strip()
-        # print(file)
-        if OBFUSCATION_METHODS["dmi"]: dmi.run(file); print("dmi")  # should run second so other modules can obfuscate it
-        if OBFUSCATION_METHODS["uj"]: uj.run(file); print("uj")
-        if OBFUSCATION_METHODS["ab"]: ab.run(file); print("ab")
+        if OBFUSCATION_METHODS["dmi"]: dmi.run(file)  # should run second so other modules can obfuscate it
+        if OBFUSCATION_METHODS["uj"]: uj.run(file)
+        if OBFUSCATION_METHODS["ab"]: ab.run(file)
         # if OBFUSCATION_METHODS["nop"]: nop.run(file)
-        if OBFUSCATION_METHODS["method_rename"]: method_rename.run(file); print("meth")
-        if OBFUSCATION_METHODS["variable_rename"]: variable_rename.run(file); print("var")
-        if OBFUSCATION_METHODS["ro"]: ro.run(file); print("ro")  # should run last
+        if OBFUSCATION_METHODS["method_rename"]: method_rename.run(file)
+        if OBFUSCATION_METHODS["variable_rename"]: variable_rename.run(file)
+        if OBFUSCATION_METHODS["ro"]: ro.run(file)  # should run last

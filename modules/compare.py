@@ -1,3 +1,4 @@
+from flask import session
 import os, difflib
 
 def generate(TMP_ASSET_FOLDER, BASE_SMALI_LOC_FILE, WORKING_SMALI_LOC_FILE):
@@ -18,6 +19,8 @@ def generate(TMP_ASSET_FOLDER, BASE_SMALI_LOC_FILE, WORKING_SMALI_LOC_FILE):
     wc_paths = working_samli_loc_file.readlines()
     wc_len = len(wc_paths)
     working_samli_loc_file.close()
+
+    session["TMP_COUNT"] = wc_len - bl_len
 
     if bl_len and wc_len != 0:
         #
@@ -69,7 +72,7 @@ def loadHTMLSelect(TMP_ASSET_FOLDER, WORKING_FOLDER, WORKING_SMALI_LOC_FILE, APK
     file = os.path.join(TMP_ASSET_FOLDER, WORKING_SMALI_LOC_FILE)
     f = open(file, 'r')
     truncatePath = os.path.join(WORKING_FOLDER, APK_NAME.replace(".apk", ""))
-    selectListData = {0: "NULL"}
+    selectListData = {0: session["TMP_COUNT"]}
     for index, path in enumerate(f):
         selectListData[index+1] = path.strip().replace(truncatePath, "")
     f.close()

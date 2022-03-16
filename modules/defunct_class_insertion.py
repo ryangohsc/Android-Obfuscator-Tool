@@ -55,7 +55,7 @@ class DefunctClassInsertion:
         with open(directory, "r") as f:
             return f.read()
 
-    def append_to_text(self, file_path):
+    def append_to_text(self, file_path, random_name):
         """
         Appends generated files to smali.txt
         :param file_path:
@@ -64,6 +64,10 @@ class DefunctClassInsertion:
         p = os.path.join("static", "tmp", "smali.txt")
         with open(p, 'a') as f:
             f.write(file_path + "\n")
+
+        n = os.path.join("static", "tmp", "newfiles.txt")
+        with open(n, 'a') as o:
+            o.write(random_name + ".smali" + "\n")
 
     def run(self, working_copy_dir):
         """
@@ -87,4 +91,4 @@ class DefunctClassInsertion:
             smali_path = re.sub("^(.*)(?=dumpster)", "", write_name)
             with open(write_name, "w") as f:
                 f.write(defunct_class)
-                self.append_to_text(smali_path)
+                self.append_to_text(smali_path, random_name)

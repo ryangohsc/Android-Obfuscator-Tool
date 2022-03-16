@@ -7,17 +7,17 @@ from modules import apk, smali, obfuscator, compare
 IP = "127.0.0.1"
 PORT = "8080"
 DEBUG = True
-SECRET = secrets.token_urlsafe(16)
 
 app = Flask(__name__)
-app.secret_key = SECRET
+app.secret_key = secrets.token_urlsafe(16)
 
 WORKING_FOLDER = "dumpster"
 TMP_ASSET_FOLDER = os.path.join("static", "tmp")
 APKTOOL_LOCATION = os.path.join("jars", "apktool_2.6.1.jar")
 
-BASE_SMALI_LOC_FILE = "BASE_smali.txt"
-WORKING_SMALI_LOC_FILE = "smali.txt"
+BASE_SMALI_LOC_FILE = "BASE_smali.txt"  # Path to all untouched SMALI files
+WORKING_SMALI_LOC_FILE = "smali.txt"  # Path to all modified/new SMALI files
+NEW_SMALI_LOC_FILE = "newfiles.txt" # Path to all new SMALI files (UI use)
 
 OBFUSCATION_METHODS = {
     "dci": True,
@@ -84,7 +84,8 @@ def locatesmali():
                          TMP_ASSET_FOLDER,
                          session["FILENAME"],
                          BASE_SMALI_LOC_FILE,
-                         WORKING_SMALI_LOC_FILE)
+                         WORKING_SMALI_LOC_FILE,
+                         NEW_SMALI_LOC_FILE)
 
     return count
 
