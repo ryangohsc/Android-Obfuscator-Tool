@@ -6,6 +6,9 @@ Key files/directories to note
 ├── dumpster/  .  .  .  .  # Working directory for all APK related files (extraction)
 ├── jars/
 ├── modules/  .  .  .  .   # All python logic
+│       │
+│       └── obfuscator.py  # Trigger point for obfuscation functions
+│
 ├── SAMPLE_FILES/
 ├── static/
 │   │
