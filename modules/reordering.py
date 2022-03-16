@@ -82,10 +82,11 @@ class Reorder:
                                 output_file.write(line)
                                 inside_try_catch = False
                             elif op_code in op_codes and not inside_try_catch:
+                                # define a block of code
                                 jump_name = self.random_string()
                                 output_file.write("\tgoto/32 :l_%s_%s\n\n" % (jump_name, jump_count))
                                 output_file.write("\tnop\n\n")
-                                output_file.write("#!code_block!#\n")
+                                output_file.write("#!block!#\n")
                                 output_file.write("\t:l_%s_%s\n" % (jump_name, jump_count))
                                 jump_count += 1
                                 new_if = self.control_flow_map.get(op_code, None)
@@ -128,7 +129,7 @@ class Reorder:
                             output_file.write(code_block.smali_code)
                         output_file.write(line)
                     elif edit_method:
-                        if line.startswith("#!code_block!#"):
+                        if line.startswith("#!block!#"):
                             block_count += 1
                             current_code_block = CodeBlock(block_count, "")
                             code_blocks.append(current_code_block)
