@@ -33,13 +33,15 @@ class Reorder:
     def open_file(self):
         """
         Opens a file and reads it
-        :return: lines
+        :return: valid_op_codes_list
         """
         directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "modules", "resources",
                                  "op_codes.txt")
+        valid_op_codes_list = []
         with open(directory, "r") as f:
-            lines = f.read().splitlines()
-            return lines
+            for line in f:
+                valid_op_codes_list.append(line.strip("\n"))
+        return valid_op_codes_list
 
     def run(self, arg_filename):
         """
@@ -82,12 +84,11 @@ class Reorder:
                                 output_file.write(line)
                                 inside_try_catch = False
                             elif op_code in op_codes and not inside_try_catch:
-                                # define a block of code
-                                jump_name = self.random_string()
-                                output_file.write("\tgoto/32 :l_%s_%s\n\n" % (jump_name, jump_count))
+                                rand_jump_name = self.random_string()
+                                output_file.write("\tgoto/32 :l_%s_%s\n\n" % (rand_jump_name, jump_count))
                                 output_file.write("\tnop\n\n")
                                 output_file.write("#!block!#\n")
-                                output_file.write("\t:l_%s_%s\n" % (jump_name, jump_count))
+                                output_file.write("\t:l_%s_%s\n" % (rand_jump_name, jump_count))
                                 jump_count += 1
                                 new_if = self.control_flow_map.get(op_code, None)
                                 if new_if:
