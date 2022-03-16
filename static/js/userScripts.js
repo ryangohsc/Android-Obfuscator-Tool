@@ -34,6 +34,14 @@ function upload(){
     cleanup()
     let formData = new FormData();
     formData.append("file", fileInput.files[0]);
+    formData.append(obfusFunc_dci.value, obfusFunc_dci.checked);
+    formData.append(obfusFunc_dmi.value, obfusFunc_dmi.checked);
+    formData.append(obfusFunc_uj.value, obfusFunc_uj.checked);
+    formData.append(obfusFunc_ab.value, obfusFunc_ab.checked);
+    formData.append(obfusFunc_nop.value, obfusFunc_nop.checked);
+    formData.append(obfusFunc_method_rename.value, obfusFunc_method_rename.checked);
+    formData.append(obfusFunc_variable_rename.value, obfusFunc_variable_rename.checked);
+    formData.append(obfusFunc_ro.value, obfusFunc_ro.checked);
     $.ajax({
         url: '/upload',
         data: formData,
@@ -46,6 +54,13 @@ function upload(){
             // $("#uploadStatus").load("../static/html/alert_OK.html");
             document.getElementById("fileInput").setAttribute("disabled", "")
             document.getElementById("obfuscateButton").setAttribute("disabled", "")
+            document.getElementById("obfusFunc_dmi").setAttribute("disabled", "")
+            document.getElementById("obfusFunc_uj").setAttribute("disabled", "")
+            document.getElementById("obfusFunc_ab").setAttribute("disabled", "")
+            document.getElementById("obfusFunc_nop").setAttribute("disabled", "")
+            document.getElementById("obfusFunc_method_rename").setAttribute("disabled", "")
+            document.getElementById("obfusFunc_variable_rename").setAttribute("disabled", "")
+            document.getElementById("obfusFunc_ro").setAttribute("disabled", "")
             document.getElementById("apkExtractSpinnerHeader").removeAttribute("hidden");
             document.getElementById("apkExtractSpinner").removeAttribute("hidden");
             //
@@ -74,11 +89,11 @@ function apkExtract(){
         success: function(response) {
             //
             // Visual updates
-            document.getElementById("apkExtractWrapper").removeAttribute("hidden");
-            document.getElementById("apkExtractHeader").removeAttribute("hidden");
+            // document.getElementById("apkExtractWrapper").removeAttribute("hidden");
+            // document.getElementById("apkExtractHeader").removeAttribute("hidden");
             document.getElementById("apkExtractSpinnerWrapper").remove();
             // Display output
-            document.getElementById("apkExtractStatus").innerHTML=response;
+            // document.getElementById("apkExtractStatus").innerHTML=response;
             //
             // Next step / action
             locateSmali()

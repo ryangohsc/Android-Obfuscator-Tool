@@ -27,7 +27,7 @@ def generate(TMP_ASSET_FOLDER, BASE_SMALI_LOC_FILE, WORKING_SMALI_LOC_FILE):
                         bl_paths[index].strip(),
                         wc_paths[index].strip(),
                         index+1,
-                        60)
+                        66)
         #
         # For defunct_class_insertion comparison
         defunct_classes = wc_len - bl_len + 1
@@ -36,7 +36,7 @@ def generate(TMP_ASSET_FOLDER, BASE_SMALI_LOC_FILE, WORKING_SMALI_LOC_FILE):
                         os.path.join(TMP_ASSET_FOLDER, ".ignore"),
                         wc_paths[bl_len+index-1].strip(),
                         bl_len+index,
-                        120)
+                        140)
     return wc_len
 
 def createHTML(TMP_ASSET_FOLDER, BASE_FILE, MODIFIED_FILE, COUNT, WRAP):
