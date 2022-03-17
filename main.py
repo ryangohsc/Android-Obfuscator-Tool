@@ -14,6 +14,7 @@ app.secret_key = secrets.token_urlsafe(16)
 WORKING_FOLDER = "dumpster"
 TMP_ASSET_FOLDER = os.path.join("static", "tmp")
 APKTOOL_LOCATION = os.path.join("jars", "apktool_2.6.1.jar")
+TOOLS_FOLDER = "tools"
 
 BASE_SMALI_LOC_FILE = "BASE_smali.txt"  # Path to all untouched SMALI files
 WORKING_SMALI_LOC_FILE = "smali.txt"  # Path to all modified/new SMALI files
@@ -118,7 +119,7 @@ def compareFile():
 def recompile_apk():
     result = apk.recompile(APKTOOL_LOCATION,
                          WORKING_FOLDER,
-                         session["FILENAME"])
+                         session["FILENAME"], TOOLS_FOLDER)
 
     return result
 
