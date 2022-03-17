@@ -178,6 +178,7 @@ function fileCompare(){
             document.getElementById("fileSelectHeader").removeAttribute("hidden");
             document.getElementById("newFilesWrapper").removeAttribute("hidden");
             document.getElementById("newAPKDownloadWrapper").removeAttribute("hidden");
+            document.getElementById("newAPKDownloadSpinner").removeAttribute("hidden");
             //
             // Display output
             $("#newFilesList").load("../static/tmp/newfiles.txt");
@@ -204,15 +205,16 @@ function fileCompare(){
  * @REQUEST     - GET
  * @URL         - /recompileapk
  * @return      - HTTP 200
- * @OnSuccess   - signapk()
  */
 function recompile_apk(){
     $.ajax({
         url: '/recompileapk',
         type: 'GET',
         success: function(response) {
-            // Next step / action
-            // signapk()
+            //
+            // Visual updates
+            document.getElementById("newAPKDownloadSpinnerWrapper").remove();
+            document.getElementById("newAPKDownloadButton").removeAttribute("hidden");
         },
         error: function() {}
     });

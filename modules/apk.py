@@ -37,6 +37,7 @@ def recompile(APKTOOL_LOCATION, WORKING_FOLDER, APK_NAME, TOOLS_FOLDER):
     # Run extract command
     result = subprocess.check_output(COMMAND, shell=True)
 
+    # Zipalign and re-sign new APK
     if os.path.exists(FILE_LOCATION):
         ZIPALIGN_LOCATION = os.path.join(TOOLS_FOLDER, "zipalign.exe")
         APKSIGNER_LOCATION = os.path.join(TOOLS_FOLDER, "apksigner.jar")

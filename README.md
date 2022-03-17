@@ -4,7 +4,7 @@ Key files/directories to note
 ```
 .
 ├── dumpster/  .  .  .  .  # Working directory for all APK related files (extraction)
-├── jars/
+│
 ├── modules/  .  .  .  .   # All python logic
 │       │
 │       └── obfuscator.py  # Trigger point for obfuscation functions
@@ -24,6 +24,8 @@ Key files/directories to note
 │       │
 │       └── index.html  .  # Main UI
 │
+├── tools/  .  .  .  .  .  # Miscellaneous tools
+│
 └── main.py  .  .  .  .    # Main launch point and routes
 ```
 
@@ -34,9 +36,9 @@ Key files/directories to note
    pip3 install -r requirements.txt
    ```
 
+
 2. **Run**
 
    ```
    python3 main.py
    ```
-

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, Response, jsonify, session
+from flask import Flask, render_template, request, Response, jsonify, session, send_file
 from werkzeug.utils import secure_filename
 import secrets, shutil, os, glob, subprocess
 
@@ -12,9 +12,10 @@ app = Flask(__name__)
 app.secret_key = secrets.token_urlsafe(16)
 
 WORKING_FOLDER = "dumpster"
-TMP_ASSET_FOLDER = os.path.join("static", "tmp")
-APKTOOL_LOCATION = os.path.join("jars", "apktool_2.6.1.jar")
 TOOLS_FOLDER = "tools"
+DOWNLOAD_FOLDER = os.path.join(WORKING_FOLDER, "dist")
+TMP_ASSET_FOLDER = os.path.join("static", "tmp")
+APKTOOL_LOCATION = os.path.join(TOOLS_FOLDER, "apktool_2.6.1.jar")
 
 BASE_SMALI_LOC_FILE = "BASE_smali.txt"  # Path to all untouched SMALI files
 WORKING_SMALI_LOC_FILE = "smali.txt"  # Path to all modified/new SMALI files
@@ -122,6 +123,14 @@ def recompile_apk():
                          session["FILENAME"], TOOLS_FOLDER)
 
     return result
+
+
+@app.route("/download", methods=['GET', 'POST'])
+def download_file():
+
+    # return jsonify({'Status': 'Download OK!'}), 200
+    FILE = os.path.join(DOWNLOAD_FOLDER, session["FILENAME"])
+    return send_file(FILE, as_attachment=True)
 
 
 if __name__ == "__main__":
