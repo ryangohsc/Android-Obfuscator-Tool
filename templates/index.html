@@ -31,7 +31,7 @@
                             <div class="form-check">
                                 <input id="obfusFunc_dci" class="form-check-input" type="checkbox" value="dci" autocomplete="off" checked disabled>
                                 <label class="form-check-label" for="obfusFunc_dci"><code>Defunct Class Insertion</code></label>
-                            </div>
+                                <span class="badge rounded-pill bg-warning text-dark">Required</span></div>
                             <div class="form-check">
                                 <input id="obfusFunc_dmi" class="form-check-input" type="checkbox" value="dmi" autocomplete="off" checked>
                                 <label class="form-check-label" for="obfusFunc_dmi"><code>Defunct Method Insertion</code></label>
@@ -90,8 +90,14 @@
                         <pre><code id="newFilesList"></code></pre>
                     </div>
                 </div>
-                <div id="newAPKDownloadWrapper" class="col bg-light border border-danger border-2 rounded-3 ms-1" hidden>
-                    <h4 id="newAPKDownloadHeader" class="pt-3 pb-1">New APK Download</h4>
+                <div id="newAPKDownloadWrapper" class="col bg-light border border-warning border-2 rounded-3 ms-1" hidden>
+                    <h4 id="newAPKDownloadHeader" class="pt-3 pb-1">New obfuscated <code>.apk</code></h4>
+                    <form id="newAPKDownloadForm" action="/download" method="GET">
+                        <div id="newAPKDownloadSpinnerWrapper" class="alert alert-light text-center">
+                            <span id="newAPKDownloadSpinner" class="spinner-border text-warning ms-auto" role="status" hidden></span>
+                        </div>
+                        <button id="newAPKDownloadButton" type='submit' class="btn btn-warning w-100 mt-4" hidden>Download</button>
+                    </form>
                 </div>
             </div>
             <div id="fileSelectWrapper" class="row bg-light border border-success rounded-3 mt-3 mb-3" hidden>
