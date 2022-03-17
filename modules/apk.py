@@ -23,7 +23,7 @@ def extract(APKTOOL_LOCATION, WORKING_FOLDER, APK_NAME):
     return result
 
 
-def recompile(APKTOOL_LOCATION, WORKING_FOLDER, APK_NAME):
+def recompile(APKTOOL_LOCATION, WORKING_FOLDER, APK_NAME, TOOLS_FOLDER):
     """
     Recompiles APK after obfuscation/modification
     :return: java process output(console)
@@ -35,6 +35,16 @@ def recompile(APKTOOL_LOCATION, WORKING_FOLDER, APK_NAME):
     COMMAND = "java -jar " + APKTOOL_LOCATION + " b " + WORKING_COPY_DIR + " -o " + FILE_LOCATION
 
     # Run extract command
-    result = subprocess.check_output(COMMAND, shell=True)
+    result1 = subprocess.check_output(COMMAND, shell=True)
 
-    return result
+    if os.path.exists(FILE_LOCATION):
+        ZIPALIGN_LOCATION = os.path.join(TOOLS_FOLDER, "zipalign.exe")
+        APKSIGNER_LOCATION = os.path.join(TOOLS_FOLDER, "apksigner.bat")
+        KEY = os.path.join(TOOLS_FOLDER, "release.jks")
+        ZIPALIGN_FILE = os.path.join(WORKING_FOLDER, "dist", "final_"+APK_NAME)
+        COMMAND1 = ZIPALIGN_LOCATION + " -v 4 " + FILE_LOCATION + " " +  ZIPALIGN_FILE
+        result2 = subprocess.check_output(COMMAND1, shell=True)
+        COMMAND2 = APKSIGNER_LOCATION + " sign --ks " + KEY + " --ks-key-alias release --ks-pass pass:s7p4od2 --key-pass pass:r5o8lw3 " + ZIPALIGN_FILE
+        result3 = subprocess.check_output(COMMAND2, shell=True)
+
+    return result1, result2, result3
