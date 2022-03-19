@@ -2,24 +2,20 @@ import re
 import secrets
 from .utils import * 
 
+# Global variables 
+op_code_pattern = re.compile(r"\s+(?P<op_code>\S+)")
+
 
 class Nop:
-	def __init__(self):
-		""""
-		Default constructor.
-		:param smali_file_list:
-		:return: 
-		"""
-		self.__valid_nop_op_codes_dir = r"C:\Users\tux\Documents\GitHub\ICT-2207-A2\modules\resources\op_codes.txt"
-		self.__op_code_pattern = re.compile(r"\s+(?P<op_code>\S+)")
-
 	def retrieve_valid_nop_op_codes(self):
 		""""
 		Retrieves a lst of valid no op codes from a .txt file in the /resources folder.
 		:param:
 		:return valid_op_codes_list: 
 		"""
-		op_code_file = open(self.__valid_nop_op_codes_dir, "r") 
+		cwd = os.getcwd()
+		op_code_file_path = os.path.join(cwd, "modules", "resources", "op_codes.txt")
+		op_code_file = open(op_code_file_path, "r") 
 		valid_op_codes_list = []
 		for line in op_code_file:
 			valid_op_codes_list.append(line.strip("\n"))
@@ -45,7 +41,7 @@ class Nop:
 		with inplace_edit_file(smali_file) as (in_file, out_file):
 			for line in in_file:
 				out_file.write(line)
-				match = self.__op_code_pattern.match(line)
+				match = op_code_pattern.match(line)
 
 				# If match a valid  op code, add NOPs to it. 
 				if match:
