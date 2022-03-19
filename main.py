@@ -19,7 +19,7 @@ APKTOOL_LOCATION = os.path.join(TOOLS_FOLDER, "apktool_2.6.1.jar")
 
 BASE_SMALI_LOC_FILE = "BASE_smali.txt"  # Path to all untouched SMALI files
 WORKING_SMALI_LOC_FILE = "smali.txt"  # Path to all modified/new SMALI files
-NEW_SMALI_LOC_FILE = "newfiles.txt" # Path to all new SMALI files (UI use)
+NEW_SMALI_LOC_FILE = "newfiles.txt"  # Path to all new SMALI files (UI use)
 
 OBFUSCATION_METHODS = {
     "dci": True,
@@ -31,6 +31,7 @@ OBFUSCATION_METHODS = {
     "variable_rename": True,
     "ro": True
 }
+
 
 @app.route("/")
 def start():
@@ -64,8 +65,8 @@ def uploadFile():
         file.save(p)
         # Store choice of obfuscation methods
         session["OBFUSCATION_METHODS"] = OBFUSCATION_METHODS
-        for index, (key, value) in enumerate((request.form).items()):
-            if (value == "false"):
+        for index, (key, value) in enumerate(request.form.items()):
+            if value == "false":
                 session["OBFUSCATION_METHODS"][key] = False;
 
     return jsonify({'Status': 'File upload OK!'}), 200
@@ -129,7 +130,7 @@ def recompile_apk():
 def download_file():
 
     # return jsonify({'Status': 'Download OK!'}), 200
-    FILE = os.path.join(DOWNLOAD_FOLDER, session["FILENAME"])
+    FILE = os.path.join(DOWNLOAD_FOLDER, "final_" + session["FILENAME"])
     return send_file(FILE, as_attachment=True)
 
 
