@@ -49,9 +49,7 @@ class Nop:
 					op_code = match.group("op_code")
 					if op_code in valid_op_codes_list:
 						nop_count = self.secure_random_number()
-						out_file.write("\tnop\n" * nop_count)		
-		in_file.close()
-		out_file.close()
+						out_file.write("\tnop\n" * nop_count)
 			
 	def run(self, arg_filename):
 		"""

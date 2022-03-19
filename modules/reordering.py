@@ -209,4 +209,3 @@ class SmaliBlock:
         :return: None.
         """
         self.smali_code += smali_code
-

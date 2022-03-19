@@ -29,4 +29,3 @@ class DefunctMethodInsertion:
                         output_file.write(line)
         except Exception as e:
             print(e)
-

@@ -14,7 +14,7 @@ def inplace_edit_file(filename):
 	written data.
 	"""
 
-	backup_filename = "{0}{1}{2}".format(filename, os.extsep, "bak")
+	backup_filename = "%s.bak" % filename
 
 	try:
 		os.unlink(backup_filename)
