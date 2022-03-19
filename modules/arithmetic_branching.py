@@ -53,6 +53,7 @@ class ArithmeticBranching:
                         edit_method = False
                     elif edit_method:
                         output_file.write(line)
+                        # match for locals line
                         match = self.locals_pattern.match(line)
                         # check if local count is 2, means 2 registers is available, then can do arithmetic branching
                         if match and int(match.group("local_count")) >= 2:

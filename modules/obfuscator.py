@@ -40,10 +40,17 @@ def run(TMP_ASSET_FOLDER, WORKING_FOLDER, APK_NAME, OBFUSCATION_METHODS):
 
     for index, line in enumerate(smali_locations):
         file = line.strip()
-        if OBFUSCATION_METHODS["dmi"]: dmi.run(file)  # should run second so other modules can obfuscate it
-        if OBFUSCATION_METHODS["uj"]: uj.run(file)
-        if OBFUSCATION_METHODS["ab"]: ab.run(file)
-        if OBFUSCATION_METHODS["nop"]: nop.run(file)
-        if OBFUSCATION_METHODS["method_rename"]: method_rename.run(file)
-        if OBFUSCATION_METHODS["variable_rename"]: variable_rename.run(file)
-        if OBFUSCATION_METHODS["ro"]: ro.run(file)  # should run last
+        if OBFUSCATION_METHODS["dmi"]:
+            dmi.run(file)  # should run second so other modules can obfuscate it
+        if OBFUSCATION_METHODS["uj"]:
+            uj.run(file)
+        if OBFUSCATION_METHODS["ab"]:
+            ab.run(file)
+        if OBFUSCATION_METHODS["nop"]:
+            nop.run(file)
+        if OBFUSCATION_METHODS["method_rename"]:
+            method_rename.run(file)
+        if OBFUSCATION_METHODS["variable_rename"]:
+            variable_rename.run(file)
+        if OBFUSCATION_METHODS["ro"]:
+            ro.run(file)  # should run last

@@ -1,5 +1,6 @@
 import os
 
+
 def locate(APK_LOCATION, TMP_ASSET_FOLDER, APK_NAME, BASE_SMALI_LOC_FILE, WORKING_SMALI_LOC_FILE, NEW_SMALI_LOC_FILE):
     """
     Traverse working directory to locate smali files
@@ -22,7 +23,7 @@ def locate(APK_LOCATION, TMP_ASSET_FOLDER, APK_NAME, BASE_SMALI_LOC_FILE, WORKIN
     for root, dirs, files in os.walk(BASE_APK_FOLDER):
         for file in files:
             if file.endswith(EXT):
-                count += 1;
+                count += 1
                 baseline_copy.write(os.path.join(root, file) + "\n")
                 working_copy.write(os.path.join(root.replace("BASE_", ""), file) + "\n")
 

@@ -8,7 +8,7 @@ op_code_pattern = re.compile(r"\s+(?P<op_code>\S+)")
 
 class Nop:
 	def retrieve_valid_nop_op_codes(self):
-		""""
+		"""
 		Retrieves a lst of valid no op codes from a .txt file in the /resources folder.
 		:param:
 		:return valid_op_codes_list: 
@@ -19,10 +19,11 @@ class Nop:
 		valid_op_codes_list = []
 		for line in op_code_file:
 			valid_op_codes_list.append(line.strip("\n"))
+		op_code_file.close()
 		return valid_op_codes_list
 
 	def secure_random_number(self):
-		""""
+		"""
 		Generates a random secure number. 
 		:param:
 		:return secure_rng.randrange(3, 9): 
@@ -31,7 +32,7 @@ class Nop:
 		return secure_rng.randrange(3, 9)
 
 	def insert_nop(self, valid_op_codes_list, smali_file):
-		""""
+		"""
 		Insert "NOPs" to make the code less readable. 
 		:param valid_op_codes_list:
 		:param smali_file:
@@ -53,7 +54,7 @@ class Nop:
 		out_file.close()
 			
 	def run(self, arg_filename):
-		""""
+		"""
 		Runs the insert nop function. 
 		:param:
 		:return True: 
