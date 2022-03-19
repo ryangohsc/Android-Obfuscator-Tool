@@ -74,7 +74,7 @@ class DefunctClassInsertion:
         """
         Runs the defunct class insertion module
         :param working_copy_dir:
-        :return: None.
+        :return None:
         """
         all_paths = self.get_end_path(working_copy_dir)
         for path in all_paths:
