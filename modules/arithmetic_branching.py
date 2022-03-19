@@ -12,7 +12,7 @@ class ArithmeticBranching:
     def random_number(self):
         """
         Returns a cryptographically secure random number between 1 and 16
-        :return:
+        :return secure_rng.randrange(1, 16):
         """
         secure_rng = secrets.SystemRandom()
         return secure_rng.randrange(1, 16)
@@ -20,7 +20,7 @@ class ArithmeticBranching:
     def random_string(self):
         """
         Returns a cryptographically secure random string
-        :return:
+        :return ''.join(random.SystemRandom().choice(string.ascii_letters) for _ in range(16)):
         """
         return ''.join(random.SystemRandom().choice(string.ascii_letters) for _ in range(16))
 
@@ -28,7 +28,7 @@ class ArithmeticBranching:
         """
         Run the arithmetic branching module
         :param arg_filename:
-        :return: None.
+        :return None:
         """
         edit_method = False
         start_label = None
@@ -58,13 +58,11 @@ class ArithmeticBranching:
                         # check if local count is 2, means 2 registers is available, then can do arithmetic branching
                         if match and int(match.group("local_count")) >= 2:
                             # generate random number and strings
-                            first_num = self.random_number()
-                            second_num = self.random_number()
                             start_label = self.random_string()
                             end_label = self.random_string()
                             tmp_label = self.random_string()
-                            output_file.write("\n\tconst v0, %s\n" % first_num)
-                            output_file.write("\tconst v1, %s\n" % second_num)
+                            output_file.write("\n\tconst v0, %s\n" % self.random_number())
+                            output_file.write("\tconst v1, %s\n" % self.random_number())
                             output_file.write("\tadd-int v0, v0, v1\n")
                             output_file.write("\trem-int v0, v0, v1\n")
                             output_file.write("\tif-gtz v0, :%s\n" % tmp_label)

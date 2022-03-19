@@ -9,7 +9,7 @@ class DefunctClassInsertion:
         """
         Gets all main smali folders
         :param working_copy_dir:
-        :return: smali_folder_list
+        :return smali_folder_list:
         """
         smali_folder_list = []
         extracted_apk_folder = working_copy_dir
@@ -24,7 +24,7 @@ class DefunctClassInsertion:
         """
         Gets all final subdirectories where the smali files reside
         :param working_copy_dir:
-        :return: final_list
+        :return final_list:
         """
         final_subdir_list = []
         folder_list = self.get_smali_folders(working_copy_dir)
@@ -41,14 +41,14 @@ class DefunctClassInsertion:
     def random_string(self):
         """
         Returns a cryptographically secure random string
-        :return:
+        :return ''.join(random.SystemRandom().choice(string.ascii_letters) for _ in range(16)):
         """
         return ''.join(random.SystemRandom().choice(string.ascii_letters) for _ in range(16))
 
     def open_file(self):
         """
         Opens a file and reads it
-        :return: f.read()
+        :return f.read():
         """
         directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "modules", "resources",
                                  "defunct_class.txt")
@@ -60,7 +60,7 @@ class DefunctClassInsertion:
         Appends generated files to smali.txt
         :param random_name:
         :param file_path:
-        :return: None
+        :return None:
         """
         p = os.path.join("static", "tmp", "smali.txt")
         with open(p, 'a') as f:
@@ -74,7 +74,7 @@ class DefunctClassInsertion:
         """
         Runs the defunct class insertion module
         :param working_copy_dir:
-        :return: None.
+        :return None:
         """
         all_paths = self.get_end_path(working_copy_dir)
         for path in all_paths:

@@ -10,7 +10,7 @@ class UnconditionalJump:
         """
         Runs the unconditional jump module
         :param arg_filename:
-        :return: None.
+        :return None:
         """
         try:
             edit_method = False

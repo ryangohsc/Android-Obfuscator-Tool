@@ -73,14 +73,14 @@ class Reorder:
     def random_string(self):
         """
         Returns a cryptographically secure random string
-        :return:
+        :return ''.join(random.SystemRandom().choice(string.ascii_letters) for _ in range(16)):
         """
         return ''.join(random.SystemRandom().choice(string.ascii_letters) for _ in range(16))
 
     def open_file(self):
         """
         Opens a file and reads it
-        :return: valid_op_codes_list
+        :return valid_op_codes_list:
         """
         directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "modules", "resources",
                                  "op_codes.txt")
@@ -94,7 +94,7 @@ class Reorder:
         """
         Runs the Reordering module
         :param arg_filename:
-        :return: None.
+        :return None:
         """
         edit_method = False
         try_catch = False
@@ -206,6 +206,6 @@ class SmaliBlock:
         """
         Appends smali code to block
         :param smali_code:
-        :return: None.
+        :return None:
         """
         self.smali_code += smali_code
