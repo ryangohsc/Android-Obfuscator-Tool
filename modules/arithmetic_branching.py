@@ -12,7 +12,7 @@ class ArithmeticBranching:
     def random_number(self):
         """
         Returns a cryptographically secure random number between 1 and 16
-        :return:
+        :return secure_rng.randrange(1, 16):
         """
         secure_rng = secrets.SystemRandom()
         return secure_rng.randrange(1, 16)
@@ -20,7 +20,7 @@ class ArithmeticBranching:
     def random_string(self):
         """
         Returns a cryptographically secure random string
-        :return:
+        :return ''.join(random.SystemRandom().choice(string.ascii_letters) for _ in range(16)):
         """
         return ''.join(random.SystemRandom().choice(string.ascii_letters) for _ in range(16))
 
@@ -28,7 +28,7 @@ class ArithmeticBranching:
         """
         Run the arithmetic branching module
         :param arg_filename:
-        :return: None.
+        :return None:
         """
         edit_method = False
         start_label = None

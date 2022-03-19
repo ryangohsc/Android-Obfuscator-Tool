@@ -6,7 +6,7 @@ class DefunctMethodInsertion:
     def open_file(self):
         """
         Opens a file and reads it
-        :return: f.read()
+        :return f.read():
         """
         directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "modules", "resources",
                                  "defunct_method.txt")
@@ -17,7 +17,7 @@ class DefunctMethodInsertion:
         """
         Runs the defunct method insertion module
         :param arg_filename:
-        :return: None.
+        :return None.:
         """
         try:
             with inplace_edit_file(arg_filename) as (input_file, output_file):
