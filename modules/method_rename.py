@@ -34,10 +34,11 @@ class MethodRename:
 		"""
 		cwd = os.getcwd()
 		android_classes_path = os.path.join(cwd, "modules", "resources", "android_classes.txt")
-		f = open(android_classes_path, "r")  
+		android_classes_file = open(android_classes_path, "r")  
 		android_classes = []
-		for line in f:
+		for line in android_classes_file:
 			android_classes.append(line.strip("\n"))
+		android_classes_file.close()
 		return android_classes   
 
 	def rename_method(self, method_name):
