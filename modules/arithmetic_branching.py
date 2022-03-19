@@ -58,13 +58,11 @@ class ArithmeticBranching:
                         # check if local count is 2, means 2 registers is available, then can do arithmetic branching
                         if match and int(match.group("local_count")) >= 2:
                             # generate random number and strings
-                            first_num = self.random_number()
-                            second_num = self.random_number()
                             start_label = self.random_string()
                             end_label = self.random_string()
                             tmp_label = self.random_string()
-                            output_file.write("\n\tconst v0, %s\n" % first_num)
-                            output_file.write("\tconst v1, %s\n" % second_num)
+                            output_file.write("\n\tconst v0, %s\n" % self.random_number())
+                            output_file.write("\tconst v1, %s\n" % self.random_number())
                             output_file.write("\tadd-int v0, v0, v1\n")
                             output_file.write("\trem-int v0, v0, v1\n")
                             output_file.write("\tif-gtz v0, :%s\n" % tmp_label)
