@@ -40,6 +40,8 @@ def start():
 
 @app.route("/cleanup", methods=['GET', 'POST'])
 def cleanup():
+    if not os.path.exists(WORKING_FOLDER):
+        os.makedirs(WORKING_FOLDER)
     # Cleanup and recreate dumpster/work folder
     shutil.rmtree(WORKING_FOLDER)
     os.makedirs(WORKING_FOLDER)
