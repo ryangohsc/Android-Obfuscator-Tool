@@ -13,9 +13,10 @@ class UnconditionalJump:
         :return: None.
         """
         try:
+            edit_method = False
             with inplace_edit_file(arg_filename) as (input_file, output_file):
-                edit_method = False
                 for line in input_file:
+                    # check for non-abstract or native methods
                     if line.startswith(
                             ".method ") and " abstract " not in line and " native " not in line and not edit_method:
                         # in method

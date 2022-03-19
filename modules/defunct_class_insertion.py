@@ -58,6 +58,7 @@ class DefunctClassInsertion:
     def append_to_text(self, file_path, random_name):
         """
         Appends generated files to smali.txt
+        :param random_name:
         :param file_path:
         :return: None
         """
@@ -82,12 +83,14 @@ class DefunctClassInsertion:
             class_name = class_name.replace("\\", "/")
             defunct_class = self.open_file()
             random_name = self.random_string()
+            # replace placeholders in the smali code
             defunct_class = defunct_class.replace("*ClassName*", class_name + "/" + random_name)
             defunct_class = defunct_class.replace("*String1*", self.random_string())
             defunct_class = defunct_class.replace("*String2*", self.random_string())
             defunct_class = defunct_class.replace("*MethodName*", self.random_string())
             defunct_class = defunct_class.replace("*SourceName*", self.random_string())
             write_name = os.path.join(path, random_name + ".smali")
+            # create the smali file
             smali_path = re.sub("^(.*)(?=dumpster)", "", write_name)
             with open(write_name, "w") as f:
                 f.write(defunct_class)
