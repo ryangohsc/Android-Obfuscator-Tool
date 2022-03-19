@@ -30,19 +30,20 @@ class ArithmeticBranching:
         :param arg_filename:
         :return: None.
         """
+        edit_method = False
+        start_label = None
+        end_label = None
         try:
             with inplace_edit_file(arg_filename) as (input_file, output_file):
-                edit_method = False
-                start_label = None
-                end_label = None
                 for line in input_file:
+                    # check for non-abstract or native methods
                     if line.startswith(
                             ".method ") and " abstract " not in line and " native " not in line and not edit_method:
-                        # in a method
+                        # in a method, can edit
                         output_file.write(line)
                         edit_method = True
                     elif line.startswith(".end method") and edit_method:
-                        # end of method
+                        # end of method and disable edit
                         if start_label and end_label:
                             output_file.write("\t:%s\n" % end_label)
                             output_file.write("\tgoto/32 :%s\n" % start_label)
@@ -52,9 +53,11 @@ class ArithmeticBranching:
                         edit_method = False
                     elif edit_method:
                         output_file.write(line)
+                        # match for locals line
                         match = self.locals_pattern.match(line)
+                        # check if local count is 2, means 2 registers is available, then can do arithmetic branching
                         if match and int(match.group("local_count")) >= 2:
-                            # if local count is 2, means 2 registers is available, then can do arithmetic branching
+                            # generate random number and strings
                             first_num = self.random_number()
                             second_num = self.random_number()
                             start_label = self.random_string()

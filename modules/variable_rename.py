@@ -5,7 +5,7 @@ from hashlib import md5
 
 class VariableRename:	
 	def generate_md5_string(self, string_to_hash):
-		""""
+		"""
 		Generates a random MD5 string. 
 		:param:
 		:return md5_string: 
@@ -14,7 +14,7 @@ class VariableRename:
 		return md5_string
 
 	def rename_variable(self, smali_file):
-		""""
+		"""
 		Reanmes variables in the smali file to a randomly generated MD5 string. 
 		:param smali_file:
 		:return: 
@@ -32,7 +32,7 @@ class VariableRename:
 		out_file.close()			
 
 	def run(self, arg_filename):
-		""""
+		"""
 		Runs the variable rename function. 
 		:param arg_filename:
 		"""

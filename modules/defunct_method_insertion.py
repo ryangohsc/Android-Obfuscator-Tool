@@ -22,10 +22,10 @@ class DefunctMethodInsertion:
         try:
             with inplace_edit_file(arg_filename) as (input_file, output_file):
                 for line in input_file:
+                    # place the method above direct methods line in the smali code
                     if re.search(r'^([ ]*?)# direct methods', line) is not None:
                         output_file.write(self.open_file())
                     else:
                         output_file.write(line)
         except Exception as e:
             print(e)
-

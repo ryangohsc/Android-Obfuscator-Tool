@@ -1,6 +1,7 @@
 from flask import session
 import os, difflib
 
+
 def generate(TMP_ASSET_FOLDER, BASE_SMALI_LOC_FILE, WORKING_SMALI_LOC_FILE):
     """
     Generates DIFF files based on base/modified(working copy) smali
@@ -15,10 +16,10 @@ def generate(TMP_ASSET_FOLDER, BASE_SMALI_LOC_FILE, WORKING_SMALI_LOC_FILE):
 
     # Open and read location of all working copy smali files
     wc = os.path.join(TMP_ASSET_FOLDER, WORKING_SMALI_LOC_FILE)
-    working_samli_loc_file = open(wc, "r")
-    wc_paths = working_samli_loc_file.readlines()
+    working_smali_loc_file = open(wc, "r")
+    wc_paths = working_smali_loc_file.readlines()
     wc_len = len(wc_paths)
-    working_samli_loc_file.close()
+    working_smali_loc_file.close()
 
     session["TMP_COUNT"] = wc_len - bl_len
 
@@ -27,20 +28,21 @@ def generate(TMP_ASSET_FOLDER, BASE_SMALI_LOC_FILE, WORKING_SMALI_LOC_FILE):
         # For all files that that existed beforehand
         for index in range(bl_len):
             createHTML(TMP_ASSET_FOLDER,
-                        bl_paths[index].strip(),
-                        wc_paths[index].strip(),
-                        index+1,
-                        66)
+                       bl_paths[index].strip(),
+                       wc_paths[index].strip(),
+                       index + 1,
+                       66)
         #
         # For defunct_class_insertion comparison
         defunct_classes = wc_len - bl_len + 1
         for index in range(1, defunct_classes):
             createHTML(TMP_ASSET_FOLDER,
-                        os.path.join(TMP_ASSET_FOLDER, ".ignore"),
-                        wc_paths[bl_len+index-1].strip(),
-                        bl_len+index,
-                        140)
+                       os.path.join(TMP_ASSET_FOLDER, ".ignore"),
+                       wc_paths[bl_len + index - 1].strip(),
+                       bl_len + index,
+                       140)
     return wc_len
+
 
 def createHTML(TMP_ASSET_FOLDER, BASE_FILE, MODIFIED_FILE, COUNT, WRAP):
     """
@@ -53,7 +55,7 @@ def createHTML(TMP_ASSET_FOLDER, BASE_FILE, MODIFIED_FILE, COUNT, WRAP):
 
     # Compare files
     compare = difflib.HtmlDiff(wrapcolumn=WRAP)
-    # Creae HTML based on compared data
+    # Create HTML based on compared data
     html = compare.make_file(base_file, modified_file)
 
     # Save to filesystem
@@ -63,6 +65,7 @@ def createHTML(TMP_ASSET_FOLDER, BASE_FILE, MODIFIED_FILE, COUNT, WRAP):
 
     base_file.close()
     modified_file.close()
+
 
 def loadHTMLSelect(TMP_ASSET_FOLDER, WORKING_FOLDER, WORKING_SMALI_LOC_FILE, APK_NAME):
     """
@@ -74,6 +77,6 @@ def loadHTMLSelect(TMP_ASSET_FOLDER, WORKING_FOLDER, WORKING_SMALI_LOC_FILE, APK
     truncatePath = os.path.join(WORKING_FOLDER, APK_NAME.replace(".apk", ""))
     selectListData = {0: session["TMP_COUNT"]}
     for index, path in enumerate(f):
-        selectListData[index+1] = path.strip().replace(truncatePath, "")
+        selectListData[index + 1] = path.strip().replace(truncatePath, "")
     f.close()
     return selectListData
