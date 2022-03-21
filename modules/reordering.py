@@ -90,6 +90,17 @@ class Reorder:
                 valid_op_codes_list.append(line.strip("\n"))
         return valid_op_codes_list
 
+    def check_non_abstract(self, arg_line):
+        """
+        Checks for non-abstract methods
+        :param arg_line:
+        :return True:
+        :return False:
+        """
+        if arg_line.startswith(".method ") and " abstract " not in arg_line and " native " not in arg_line:
+            return True
+        return False
+
     def run(self, arg_filename):
         """
         Runs the Reordering module
@@ -99,102 +110,97 @@ class Reorder:
         edit_method = False
         try_catch = False
         jump_count = 0
-        try:
-            with inplace_edit_file(arg_filename) as (input_file, output_file):
-                for line in input_file:
-                    # check for non-abstract or native methods
-                    if line.startswith(
-                            ".method ") and " abstract " not in line and " native " not in line and not edit_method:
-                        # in a method
-                        output_file.write(line)
-                        edit_method = True
-                        try_catch = False
-                        jump_count = 0
-                    elif line.startswith(".end method") and edit_method:
-                        # end of method
-                        output_file.write(line)
-                        edit_method = False
-                        try_catch = False
-                    elif edit_method:
-                        match = self.op_code_pattern.match(line)
-                        if match:
-                            op_code = match.group("op_code")
-                            # check for try catch
-                            if op_code.startswith(":try_start_"):
-                                output_file.write(line)
-                                try_catch = True
-                            # check if end of try catch
-                            elif op_code.startswith(":try_end_"):
-                                output_file.write(line)
-                                try_catch = False
-                            # check if not in try catch and op code is in the list
-                            elif op_code in self.valid_block_opcodes and not try_catch:
-                                rand_jump_name = self.random_string()
-                                output_file.write("\tgoto/32 :l_%s_%s\n\n" % (rand_jump_name, jump_count))
-                                output_file.write("\tnop\n\n")
-                                # write the block placeholder so a block of code can replace it
-                                output_file.write("#!block!#\n")
-                                output_file.write("\t:l_%s_%s\n" % (rand_jump_name, jump_count))
-                                jump_count += 1
-                                # check if opcode is an if control flow, else return None
-                                if_inversion = self.control_flow_map.get(op_code, None)
-                                if if_inversion:
-                                    # invert the if control flow
-                                    if_match = self.if_pattern.match(line)
-                                    random_label_name = self.random_string()
-                                    output_file.write("\t%s %s, :gl_%s\n\n" % (if_inversion, if_match.group("register"),
-                                                                               random_label_name))
-                                    output_file.write("\tgoto/32 :%s\n\n" % if_match.group("goto_label"))
-                                    output_file.write("\t:gl_%s" % random_label_name)
-                                else:
-                                    output_file.write(line)
+        with inplace_edit_file(arg_filename) as (input_file, output_file):
+            for line in input_file:
+                # check for non-abstract or native methods
+                if self.check_non_abstract(line) and not edit_method:
+                    # in a method
+                    output_file.write(line)
+                    edit_method = True
+                    try_catch = False
+                    jump_count = 0
+                elif line.startswith(".end method") and edit_method:
+                    # end of method
+                    output_file.write(line)
+                    edit_method = False
+                    try_catch = False
+                elif edit_method:
+                    match = self.op_code_pattern.match(line)
+                    if match:
+                        op_code = match.group("op_code")
+                        # check for try catch
+                        if op_code.startswith(":try_start_"):
+                            output_file.write(line)
+                            try_catch = True
+                        # check if end of try catch
+                        elif op_code.startswith(":try_end_"):
+                            output_file.write(line)
+                            try_catch = False
+                        # check if not in try catch and op code is in the list
+                        elif op_code in self.valid_block_opcodes and not try_catch:
+                            rand_jump_name = self.random_string()
+                            output_file.write("\tgoto/32 :l_%s_%s\n\n" % (rand_jump_name, jump_count))
+                            output_file.write("\tnop\n\n")
+                            # write the block placeholder so a block of code can replace it
+                            output_file.write("#!block!#\n")
+                            output_file.write("\t:l_%s_%s\n" % (rand_jump_name, jump_count))
+                            jump_count += 1
+                            # check if opcode is an if control flow, else return None
+                            if_inversion = self.control_flow_map.get(op_code, None)
+                            if if_inversion:
+                                # invert the if control flow
+                                if_match = self.if_pattern.match(line)
+                                random_label_name = self.random_string()
+                                output_file.write("\t%s %s, :gl_%s\n\n" % (if_inversion, if_match.group("register"),
+                                                                           random_label_name))
+                                output_file.write("\tgoto/32 :%s\n\n" % if_match.group("goto_label"))
+                                output_file.write("\t:gl_%s" % random_label_name)
                             else:
                                 output_file.write(line)
                         else:
                             output_file.write(line)
                     else:
                         output_file.write(line)
+                else:
+                    output_file.write(line)
 
-            # Shuffles code blocks within a method
-            with inplace_edit_file(arg_filename) as (input_file, output_file):
-                edit_method = False
-                block_count = 0
-                code_blocks: List[SmaliBlock] = []
-                current_code_block = None
-                for line in input_file:
-                    # check for non-abstract or native methods
-                    if line.startswith(
-                            ".method ") and " abstract " not in line and " native " not in line and not edit_method:
-                        # in method
-                        output_file.write(line)
-                        edit_method = True
-                        block_count = 0
-                        code_blocks = []
-                        current_code_block = None
-                    elif line.startswith(".end method") and edit_method:
-                        # end of method
-                        edit_method = False
-                        # shuffle the code blocks
-                        random.shuffle(code_blocks)
-                        for code_block in code_blocks:
-                            output_file.write(code_block.smali_code)
-                        output_file.write(line)
-                    elif edit_method:
-                        # currently, in a method to group code into blocks
-                        # check for the code block placeholder and writes a block of code in
-                        if line.startswith("#!block!#"):
-                            block_count += 1
-                            current_code_block = SmaliBlock(block_count, "")
-                            code_blocks.append(current_code_block)
-                        else:
-                            if block_count > 0 and current_code_block:
-                                current_code_block.append_to_block(line)
-                            else:
-                                output_file.write(line)
+        # Shuffles code blocks within a method
+        with inplace_edit_file(arg_filename) as (input_file, output_file):
+            edit_method = False
+            block_count = 0
+            code_blocks: List[SmaliBlock] = []
+            current_code_block = None
+            for line in input_file:
+                # check for non-abstract or native methods
+                if self.check_non_abstract(line) and not edit_method:
+                    # in method
+                    output_file.write(line)
+                    edit_method = True
+                    block_count = 0
+                    code_blocks = []
+                    current_code_block = None
+                elif line.startswith(".end method") and edit_method:
+                    # end of method
+                    edit_method = False
+                    # shuffle the code blocks
+                    random.shuffle(code_blocks)
+                    for code_block in code_blocks:
+                        output_file.write(code_block.smali_code)
+                    output_file.write(line)
+                elif edit_method:
+                    # currently, in a method to group code into blocks
+                    # check for the code block placeholder and writes a block of code in
+                    if line.startswith("#!block!#"):
+                        block_count += 1
+                        current_code_block = SmaliBlock(block_count, "")
+                        code_blocks.append(current_code_block)
                     else:
-                        output_file.write(line)
-        except Exception as e:
-            print(e)
+                        if block_count > 0 and current_code_block:
+                            current_code_block.append_to_block(line)
+                        else:
+                            output_file.write(line)
+                else:
+                    output_file.write(line)
 
 
 class SmaliBlock:
