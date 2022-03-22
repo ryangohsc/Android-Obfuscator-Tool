@@ -1,11 +1,11 @@
 import re
 from .utils import *
 
+# Global variables
+LOCALS_PATTERN = re.compile(r"\s+\.locals\s(?P<local_count>\d+)")
+
 
 class UnconditionalJump:
-    def __init__(self):
-        self.locals_pattern = re.compile(r"\s+\.locals\s(?P<local_count>\d+)")
-
     def check_non_abstract(self, arg_line):
         """
         Checks for non-abstract methods
@@ -37,7 +37,7 @@ class UnconditionalJump:
                     output_file.write("\tgoto/32 :GpQrBfyCJxjiSUAj\n\n")
                     output_file.write(line)
                     edit_method = False
-                elif edit_method and self.locals_pattern.match(line):
+                elif edit_method and LOCALS_PATTERN.match(line):
                     # detect .locals in a method
                     output_file.write("\n\tgoto/32 :zPJwAPOogfLGQLoD\n\n")
                     output_file.write("\t:GpQrBfyCJxjiSUAj\n")

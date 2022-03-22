@@ -4,11 +4,11 @@ import secrets
 import string
 from .utils import *
 
+# Global variables
+LOCALS_PATTERN = re.compile(r"\s+\.locals\s(?P<local_count>\d+)")
+
 
 class ArithmeticBranching:
-    def __init__(self):
-        self.locals_pattern = re.compile(r"\s+\.locals\s(?P<local_count>\d+)")
-
     def random_number(self):
         """
         Returns a cryptographically secure random number between 1 and 16
@@ -63,7 +63,7 @@ class ArithmeticBranching:
                 elif edit_method:
                     output_file.write(line)
                     # match for locals line
-                    match = self.locals_pattern.match(line)
+                    match = LOCALS_PATTERN.match(line)
                     # check if local count is 2, means 2 registers is available, then can do arithmetic branching
                     if match and int(match.group("local_count")) >= 2:
                         # generate random number and strings
