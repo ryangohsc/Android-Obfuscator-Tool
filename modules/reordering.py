@@ -109,7 +109,6 @@ class Reorder:
         """
         edit_method = False
         try_catch = False
-        jump_count = 0
         with inplace_edit_file(arg_filename) as (input_file, output_file):
             for line in input_file:
                 # check for non-abstract or native methods
@@ -118,7 +117,6 @@ class Reorder:
                     output_file.write(line)
                     edit_method = True
                     try_catch = False
-                    jump_count = 0
                 elif line.startswith(".end method") and edit_method:
                     # end of method
                     output_file.write(line)
@@ -139,22 +137,21 @@ class Reorder:
                         # check if not in try catch and op code is in the list
                         elif op_code in VALID_BLOCK_OPCODES and not try_catch:
                             rand_jump_name = self.random_string()
-                            output_file.write("\tgoto/32 :l_%s_%s\n\n" % (rand_jump_name, jump_count))
+                            output_file.write("\tgoto/32 :%s\n\n" % rand_jump_name)
                             output_file.write("\tnop\n\n")
                             # write the block placeholder so a block of code can replace it
                             output_file.write("#!block!#\n")
-                            output_file.write("\t:l_%s_%s\n" % (rand_jump_name, jump_count))
-                            jump_count += 1
+                            output_file.write("\t:%s\n" % rand_jump_name)
                             # check if opcode is an if control flow, else return None
                             if_inversion = CONTROL_FLOW_MAP.get(op_code, None)
                             if if_inversion:
                                 # invert the if control flow
                                 if_match = IF_PATTERN.match(line)
                                 random_label_name = self.random_string()
-                                output_file.write("\t%s %s, :gl_%s\n\n" % (if_inversion, if_match.group("register"),
-                                                                           random_label_name))
+                                output_file.write("\t%s %s, :%s\n\n" % (if_inversion, if_match.group("register"),
+                                                                        random_label_name))
                                 output_file.write("\tgoto/32 :%s\n\n" % if_match.group("goto_label"))
-                                output_file.write("\t:gl_%s" % random_label_name)
+                                output_file.write("\t:%s" % random_label_name)
                             else:
                                 output_file.write(line)
                         else:
