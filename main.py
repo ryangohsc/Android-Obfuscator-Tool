@@ -35,11 +35,19 @@ OBFUSCATION_METHODS = {
 
 @app.route("/")
 def start():
+    """
+    Serves landing page
+    :return: index.html
+    """
     return render_template("index.html")
 
 
 @app.route("/cleanup", methods=['GET', 'POST'])
 def cleanup():
+    """
+    Cleans up working directories
+    :return: Status 200
+    """
     if not os.path.exists(WORKING_FOLDER):
         os.makedirs(WORKING_FOLDER)
     # Cleanup and recreate dumpster/work folder
@@ -48,6 +56,8 @@ def cleanup():
     wf = os.path.join(WORKING_FOLDER, ".ignore")
     open(wf, 'a').close()
 
+    if not os.path.exists(TMP_ASSET_FOLDER):
+        os.makedirs(TMP_ASSET_FOLDER)
     # Cleanup and recreate difflib HTML folder
     shutil.rmtree(TMP_ASSET_FOLDER)
     os.makedirs(TMP_ASSET_FOLDER)
@@ -59,6 +69,10 @@ def cleanup():
 
 @app.route("/upload", methods=['GET', 'POST'])
 def uploadFile():
+    """
+    Endpoint for APK Upload
+    :return: Status 200
+    """
     if request.method == "POST":
         # Store APK
         file = request.files["file"]
@@ -76,15 +90,23 @@ def uploadFile():
 
 @app.route("/extractapk", methods=['GET', 'POST'])
 def extractapk():
+    """
+    Trigger for APK extraction
+    :return: Status 200
+    """
     result = apk.extract(APKTOOL_LOCATION,
                          WORKING_FOLDER,
                          session["FILENAME"])
 
-    return result
+    return jsonify({'Status': 'APK Extraction OK!'}), 200
 
 
 @app.route("/locatesmali", methods=['GET', 'POST'])
 def locatesmali():
+    """
+    Trigger for SMALI locating via traversal
+    :return: count - Number of SMALI files found from extracted APK
+    """
     count = smali.locate(WORKING_FOLDER,
                          TMP_ASSET_FOLDER,
                          session["FILENAME"],
@@ -97,6 +119,10 @@ def locatesmali():
 
 @app.route("/obfuscate", methods=['GET', 'POST'])
 def obfuscate():
+    """
+    Trigger for obfuscation functions
+    :return: Status 200
+    """
     obfuscator.run(TMP_ASSET_FOLDER,
                    WORKING_FOLDER,
                    session["FILENAME"],
@@ -107,6 +133,10 @@ def obfuscate():
 
 @app.route("/comparefile", methods=['GET', 'POST'])
 def compareFile():
+    """
+    Trigger for SMALI file comparison between original(BASE) and modified(WORKING)
+    :return: selectListData - List of modified files for user selection in HTML
+    """
     count = compare.generate(TMP_ASSET_FOLDER,
                              BASE_SMALI_LOC_FILE,
                              WORKING_SMALI_LOC_FILE)
@@ -121,17 +151,22 @@ def compareFile():
 
 @app.route("/recompileapk", methods=['GET', 'POST'])
 def recompile_apk():
-    result = apk.recompile(APKTOOL_LOCATION,
+    """
+    Trigger for APK re-compilation
+    :return: Status 200
+    """
+    apk.recompile(APKTOOL_LOCATION,
                          WORKING_FOLDER,
                          session["FILENAME"], TOOLS_FOLDER)
-
-    return result
+    return jsonify({'Status': 'APK Recompile OK!'}), 200
 
 
 @app.route("/download", methods=['GET', 'POST'])
 def download_file():
-
-    # return jsonify({'Status': 'Download OK!'}), 200
+    """
+    Endpoint for APK Download
+    :return: APK file
+    """
     FILE = os.path.join(DOWNLOAD_FOLDER, "final_" + session["FILENAME"])
     return send_file(FILE, as_attachment=True)
 

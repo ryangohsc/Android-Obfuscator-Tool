@@ -14,13 +14,11 @@ def extract(APKTOOL_LOCATION, WORKING_FOLDER, APK_NAME):
     COMMAND = "java -jar " + APKTOOL_LOCATION + " d " + FILE_LOCATION + " -o " + WORKING_COPY_DIR
 
     # Run extract command
-    result = subprocess.check_output(COMMAND, shell=True)
+    subprocess.check_output(COMMAND, shell=True)
 
     # Create base line copy for comparison
     distutils.dir_util._path_created = {}
     dir_util.copy_tree(WORKING_COPY_DIR, BASELINE_COPY_DIR)
-
-    return result
 
 
 def recompile(APKTOOL_LOCATION, WORKING_FOLDER, APK_NAME, TOOLS_FOLDER):
@@ -35,7 +33,7 @@ def recompile(APKTOOL_LOCATION, WORKING_FOLDER, APK_NAME, TOOLS_FOLDER):
     COMMAND = "java -jar " + APKTOOL_LOCATION + " b " + WORKING_COPY_DIR + " -o " + FILE_LOCATION
 
     # Run extract command
-    result = subprocess.check_output(COMMAND, shell=True)
+    subprocess.check_output(COMMAND, shell=True)
 
     # Zipalign and re-sign new APK
     if os.path.exists(FILE_LOCATION):
@@ -44,8 +42,6 @@ def recompile(APKTOOL_LOCATION, WORKING_FOLDER, APK_NAME, TOOLS_FOLDER):
         KEY = os.path.join(TOOLS_FOLDER, "release.jks")
         ZIPALIGN_FILE = os.path.join(WORKING_FOLDER, "dist", "final_" + APK_NAME)
         ZIPALIGN_COMMAND = ZIPALIGN_LOCATION + " -v 4 " + FILE_LOCATION + " " + ZIPALIGN_FILE
-        zipalign_result = subprocess.check_output(ZIPALIGN_COMMAND, shell=True)
+        subprocess.check_output(ZIPALIGN_COMMAND, shell=True)
         RESIGN_COMMAND = APKSIGNER_LOCATION + " sign --ks " + KEY + " --ks-key-alias release --ks-pass pass:s7p4od2 --key-pass pass:r5o8lw3 " + ZIPALIGN_FILE
-        resign_result = subprocess.check_output(RESIGN_COMMAND, shell=True)
-
-    return result, zipalign_result, resign_result
+        subprocess.check_output(RESIGN_COMMAND, shell=True)

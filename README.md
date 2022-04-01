@@ -13,7 +13,6 @@ Key files/directories to note
 ├── static/
 │   │
 │   ├── css/
-│   ├── html/
 │   ├── js/
 │   │   │
 │   │   └── userScripts.js # Handles UI/Logic communication
