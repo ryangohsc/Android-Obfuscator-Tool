@@ -1,4 +1,4 @@
-# ICT-2207-A2
+# Android Obfuscator Tool
 
 Key files/directories to note
 ```
